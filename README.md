@@ -77,6 +77,7 @@ cp .env.example .env
 php artisan key:generate
 php artisan migrate
 npm install && npm run dev
+```
 
 ✅ Make sure to point your local domain to the correct host entry for testing subdomains.
 
