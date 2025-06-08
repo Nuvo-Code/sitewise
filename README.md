@@ -1,61 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌐 Sitewise
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Sitewise** is a Laravel-based, multi-tenant platform for serving static sites under custom domains. Each domain hosts its own site and admin panel, supporting flexible page content types, templates, and Markdown rendering.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Project Goals
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Quickly deploy and manage multiple static websites under different domains.
+- Centralized control via a shared admin interface (`/admin`), scoped per domain.
+- Support flexible content delivery: HTML, Markdown, and JSON.
+- Reusable page templates with dynamic content blocks.
+- Simple deployment via [Coolify](https://coolify.io) with optional scaling.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🧩 Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### ✅ Domain-based Multi-Tenancy
+- Each domain maps to a single `Site` (record in DB).
+- Admin panel is accessed via `/admin` on that domain (e.g. `https://client1.com/admin`).
+- All admin actions are scoped to the current domain automatically.
+- Domains are manually registered and not user-generated (trusted origin only).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 🛠️ Admin Panel (via FilamentPHP)
+- Accessible per-site at `/admin`.
+- Automatically creates the `Site` record if the domain is not yet registered (with read-only domain field).
+- Clean and scoped resource management:
+  - Pages (`pages`)
+  - Templates (`templates`)
+  - Template Blocks (`template_contents`)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📄 Page System
+- Pages are attached to a specific site.
+- Each page can be of one of the following types:
+  - `html`: Raw HTML content rendered in a Blade view.
+  - `markdown`: Parsed using CommonMark and rendered.
+  - `json`: Raw or dynamic JSON returned via API.
+- Pages may optionally be linked to a `template_id`.
+  - If a template is selected, raw content is hidden and dynamic fields are shown.
 
-## Laravel Sponsors
+### 🧱 Template System
+- Templates define reusable content block structures via JSON (e.g. `hero_title`, `cta_text`, etc.).
+- Templates are assigned **per page**, not per site.
+- Template content is stored in `template_contents`, linked by page and key.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 📝 Markdown Support
+- Markdown rendering is powered by `league/commonmark`.
+- Pages with `response_type = markdown` display parsed Markdown content.
+- Admin UI allows Markdown editing with a preview option (if available).
 
-### Premium Partners
+### 🖼️ Static Assets
+- Shared frontend assets (e.g., Tailwind CSS, JS) served via `/sitewise-assets`.
+- Compatible with Laravel Mix or Vite build tools.
+- CDN-optimized and versioned delivery planned.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🗂️ Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Backend**: Laravel 11+
+- **Admin**: FilamentPHP
+- **Markdown**: league/commonmark
+- **Deployment**: Coolify (Dockerized)
+- **Templating**: Blade
+- **Frontend Assets**: Tailwind, Alpine, etc.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🧰 Setup & Installation
 
-## Security Vulnerabilities
+```bash
+git clone https://github.com/nuvo-code/sitewise.git
+cd sitewise
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install && npm run dev
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+✅ Make sure to point your local domain to the correct host entry for testing subdomains.
 
-## License
+⸻
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+🌐 Domain Handling
+	•	Each domain (or subdomain) is mapped to a site in the DB.
+	•	A middleware detects the current domain and injects app()->site into the request lifecycle.
+	•	Unregistered domains will auto-create a site record with a read-only domain value.
+
+⸻
+
+📦 Deployment (Coolify)
+	•	Single instance Laravel app deployed via Coolify.
+	•	One container serves all domains (multi-tenant via middleware).
+	•	Optional scaling via more containers or CDN caching in the future.
+
+⸻
+
+🔒 Security
+	•	No public user registration.
+	•	Admin access is protected (optionally via VPN or Basic Auth).
+	•	All domains are manually managed by the system operator.
+	•	Pages and templates are always scoped to app()->site.
+
+⸻
+
+📌 Roadmap Ideas
+	•	Preview mode for pages in admin.
+	•	API for CLI/CI-based site provisioning.
+	•	Domain SSL automation (via Coolify/Traefik).
+	•	Import/export content tools.
+	•	Webhook support on page updates.
+
+⸻
+
+🧑‍💻 Maintained By
+
+Nuvo Code — a software development company focused on developer-friendly tooling and automation.
+
+⸻
+
+📄 License
+
+This project is licensed under the MIT License.
