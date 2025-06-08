@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sitewise
+    container_name: sitewise
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=pgsql
+  database:
+    image: postgres:17
+    container_name: sitewise_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=sitewise
+      - POSTGRES_USER=sitewise
+      - POSTGRES_PASSWORD=sitewise
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
