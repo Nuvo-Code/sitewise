@@ -51,6 +51,59 @@ class Template extends Model
         return $this->structure ?? [];
     }
 
+    public function getFieldsForFormAttribute(): array
+    {
+        if (empty($this->structure)) {
+            return [];
+        }
+
+        // Handle both old and new structure formats
+        $fields = [];
+
+        // Check if this is the new format (array of field objects)
+        $isNewFormat = is_array($this->structure) &&
+                      !empty($this->structure) &&
+                      isset($this->structure[0]) &&
+                      is_array($this->structure[0]) &&
+                      isset($this->structure[0]['key'], $this->structure[0]['type']);
+
+        if ($isNewFormat) {
+            // New format - array of field objects
+            foreach ($this->structure as $field) {
+                if (is_array($field) && isset($field['key'], $field['type'])) {
+                    $fields[$field['key']] = $field;
+                }
+            }
+        } else {
+            // Old format - key-value pairs
+            foreach ($this->structure as $key => $type) {
+                $fields[$key] = [
+                    'name' => ucwords(str_replace('_', ' ', $key)),
+                    'key' => $key,
+                    'type' => $type,
+                    'required' => false,
+                    'description' => null,
+                    'default_value' => null,
+                    'options' => [],
+                    'validation_rules' => [],
+                ];
+            }
+        }
+
+        return $fields;
+    }
+
+    public function getFieldKeysAttribute(): array
+    {
+        return array_keys($this->getFieldsForFormAttribute());
+    }
+
+    public function getFieldByKey(string $key): ?array
+    {
+        $fields = $this->getFieldsForFormAttribute();
+        return $fields[$key] ?? null;
+    }
+
     public function hasField(string $key): bool
     {
         return array_key_exists($key, $this->fields);

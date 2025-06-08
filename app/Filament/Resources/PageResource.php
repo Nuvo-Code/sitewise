@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
 use App\Models\Template;
+use App\Services\TemplateContentService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -98,16 +99,43 @@ class PageResource extends Resource
                     ->visible(fn (Forms\Get $get) => !$get('template_id')),
 
                 Forms\Components\Section::make('Template Content')
-                    ->schema([
-                        Forms\Components\Placeholder::make('template_info')
-                            ->label('')
-                            ->content(fn (Forms\Get $get) =>
-                                $get('template_id')
-                                    ? 'Template fields will be available after saving the page with a template selected.'
-                                    : 'Select a template above to use structured content.'
-                            ),
-                    ])
-                    ->visible(fn (Forms\Get $get) => (bool) $get('template_id')),
+                    ->schema(function (Forms\Get $get, ?Page $record) {
+                        $templateId = $get('template_id');
+
+                        if (!$templateId) {
+                            return [
+                                Forms\Components\Placeholder::make('template_info')
+                                    ->label('')
+                                    ->content('Select a template above to use structured content.')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+
+                        $template = Template::find($templateId);
+                        if (!$template) {
+                            return [
+                                Forms\Components\Placeholder::make('template_error')
+                                    ->label('')
+                                    ->content('Template not found.')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+
+                        $components = TemplateContentService::generateFormComponents($template);
+
+                        if (empty($components)) {
+                            return [
+                                Forms\Components\Placeholder::make('no_fields')
+                                    ->label('')
+                                    ->content('This template has no fields defined.')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+
+                        return $components;
+                    })
+                    ->visible(fn (Forms\Get $get) => (bool) $get('template_id'))
+                    ->columns(2),
             ]);
     }
 
@@ -175,8 +203,11 @@ class PageResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('site_id', app('site')?->id);
+            ->where('site_id', app('site')?->id)
+            ->with(['template']);
     }
+
+
 
     public static function getRelations(): array
     {

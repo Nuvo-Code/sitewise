@@ -47,15 +47,91 @@ class TemplateResource extends Resource
 
                 Forms\Components\Section::make('Template Structure')
                     ->schema([
-                        Forms\Components\KeyValue::make('structure')
+                        Forms\Components\Repeater::make('structure')
                             ->label('Template Fields')
-                            ->keyLabel('Field Name')
-                            ->valueLabel('Field Type')
-                            ->addActionLabel('Add Field')
-                            ->helperText('Define the fields for this template. Field types: text, textarea, select, number, email, url, date')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Field Name')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        $set('key', str_replace([' ', '-'], '_', strtolower($state)));
+                                    }),
+
+                                Forms\Components\Hidden::make('key'),
+
+                                Forms\Components\Select::make('type')
+                                    ->label('Field Type')
+                                    ->required()
+                                    ->options([
+                                        'text' => 'Text Input',
+                                        'textarea' => 'Textarea',
+                                        'rich_text' => 'Rich Text Editor',
+                                        'number' => 'Number',
+                                        'email' => 'Email',
+                                        'url' => 'URL',
+                                        'date' => 'Date',
+                                        'datetime' => 'Date & Time',
+                                        'select' => 'Select Dropdown',
+                                        'checkbox' => 'Checkbox',
+                                        'toggle' => 'Toggle Switch',
+                                        'file' => 'File Upload',
+                                        'image' => 'Image Upload',
+                                        'color' => 'Color Picker',
+                                    ])
+                                    ->live(),
+
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Field Description')
+                                    ->rows(2)
+                                    ->helperText('Optional description for content editors'),
+
+                                Forms\Components\Group::make([
+                                    Forms\Components\Toggle::make('required')
+                                        ->label('Required Field')
+                                        ->default(false),
+
+                                    Forms\Components\TextInput::make('default_value')
+                                        ->label('Default Value')
+                                        ->helperText('Optional default value for this field'),
+                                ])
+                                ->columns(2),
+
+                                // Options for select fields
+                                Forms\Components\KeyValue::make('options')
+                                    ->label('Select Options')
+                                    ->keyLabel('Value')
+                                    ->valueLabel('Label')
+                                    ->addActionLabel('Add Option')
+                                    ->visible(fn (Forms\Get $get) => $get('type') === 'select')
+                                    ->helperText('Define the available options for this select field'),
+
+                                // Validation rules
+                                Forms\Components\TagsInput::make('validation_rules')
+                                    ->label('Validation Rules')
+                                    ->helperText('Laravel validation rules (e.g., min:3, max:255)')
+                                    ->placeholder('Add validation rule'),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Field')
+                            ->addActionLabel('Add Template Field')
+                            ->reorderableWithButtons()
+                            ->collapsible()
                             ->default([
-                                'title' => 'text',
-                                'content' => 'textarea',
+                                [
+                                    'name' => 'Title',
+                                    'key' => 'title',
+                                    'type' => 'text',
+                                    'required' => true,
+                                    'description' => 'The main title for this content',
+                                ],
+                                [
+                                    'name' => 'Content',
+                                    'key' => 'content',
+                                    'type' => 'rich_text',
+                                    'required' => true,
+                                    'description' => 'The main content body',
+                                ],
                             ]),
                     ]),
             ]);

@@ -24,8 +24,9 @@ class TemplateContentsRelationManager extends RelationManager
                     ->options(function () {
                         $page = $this->getOwnerRecord();
                         if ($page->template) {
-                            return collect($page->template->structure)
-                                ->mapWithKeys(fn ($type, $key) => [$key => ucwords(str_replace('_', ' ', $key)) . " ({$type})"])
+                            $fields = $page->template->getFieldsForFormAttribute();
+                            return collect($fields)
+                                ->mapWithKeys(fn ($field) => [$field['key'] => $field['name'] . " ({$field['type']})"])
                                 ->toArray();
                         }
                         return [];

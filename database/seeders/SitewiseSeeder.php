@@ -26,17 +26,62 @@ class SitewiseSeeder extends Seeder
             'active' => true,
         ]);
 
-        // Create a sample template
+        // Create a sample template with enhanced structure
         $template = Template::create([
             'site_id' => $site->id,
             'name' => 'Landing Page',
             'description' => 'A template for landing pages with hero section and CTA',
             'structure' => [
-                'hero_title' => 'text',
-                'hero_subtitle' => 'textarea',
-                'cta_text' => 'text',
-                'cta_link' => 'url',
-                'features' => 'textarea',
+                [
+                    'name' => 'Hero Title',
+                    'key' => 'hero_title',
+                    'type' => 'text',
+                    'required' => true,
+                    'description' => 'The main headline for the hero section',
+                    'default_value' => null,
+                    'options' => [],
+                    'validation_rules' => ['max:100'],
+                ],
+                [
+                    'name' => 'Hero Subtitle',
+                    'key' => 'hero_subtitle',
+                    'type' => 'textarea',
+                    'required' => false,
+                    'description' => 'Supporting text for the hero section',
+                    'default_value' => null,
+                    'options' => [],
+                    'validation_rules' => ['max:255'],
+                ],
+                [
+                    'name' => 'CTA Text',
+                    'key' => 'cta_text',
+                    'type' => 'text',
+                    'required' => true,
+                    'description' => 'Call-to-action button text',
+                    'default_value' => 'Get Started',
+                    'options' => [],
+                    'validation_rules' => ['max:50'],
+                ],
+                [
+                    'name' => 'CTA Link',
+                    'key' => 'cta_link',
+                    'type' => 'url',
+                    'required' => true,
+                    'description' => 'URL for the call-to-action button',
+                    'default_value' => null,
+                    'options' => [],
+                    'validation_rules' => ['url'],
+                ],
+                [
+                    'name' => 'Features',
+                    'key' => 'features',
+                    'type' => 'rich_text',
+                    'required' => false,
+                    'description' => 'List of key features or benefits',
+                    'default_value' => null,
+                    'options' => [],
+                    'validation_rules' => [],
+                ],
             ],
             'active' => true,
         ]);
