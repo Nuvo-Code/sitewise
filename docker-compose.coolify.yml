@@ -16,7 +16,7 @@ services:
       - APP_PORT=${APP_PORT}
       - APP_URL=http://localhost
       - DB_CONNECTION=pgsql
-      - DB_HOST=database
+      - DB_HOST=${DB_HOST:-database}
       - DB_PORT=${DB_PORT:-5432}
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
