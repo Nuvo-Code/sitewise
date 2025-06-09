@@ -6,19 +6,21 @@ services:
     image: sitewise
     container_name: sitewise
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-80}:8000"
     volumes:
       - .:/var/www/html
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost:8000
+      - APP_KEY=${APP_KEY}
+      - APP_DOMAIN=${APP_DOMAIN}
+      - APP_URL=https://${APP_DOMAIN}
       - DB_CONNECTION=pgsql
   database:
     image: postgres:17
     container_name: sitewise_db
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     environment:
       - POSTGRES_DB=sitewise
       - POSTGRES_USER=sitewise

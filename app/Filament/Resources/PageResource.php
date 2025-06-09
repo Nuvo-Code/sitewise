@@ -66,6 +66,12 @@ class PageResource extends Resource
                                     ->required()
                                     ->default('html')
                                     ->live()
+                                    ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                        // When response_type is changed away from 'template', clear template_id
+                                        if ($state !== 'template') {
+                                            $set('template_id', null);
+                                        }
+                                    })
                                     ->prefixIcon('heroicon-o-code-bracket'),
 
                                 Forms\Components\Select::make('template_id')
@@ -75,7 +81,14 @@ class PageResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->helperText('Optional: Select a template to use structured content')
+                                    ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                        // When a template is selected, automatically set response_type to 'template'
+                                        if ($state) {
+                                            $set('response_type', 'template');
+                                        }
+                                    })
+                                    ->visible(fn (Forms\Get $get) => $get('response_type') === 'template')
+                                    ->helperText('Select a template to use structured content with Blade rendering.')
                                     ->prefixIcon('heroicon-o-document-duplicate'),
 
                                 Forms\Components\Toggle::make('active')
@@ -93,48 +106,35 @@ class PageResource extends Resource
                                 Forms\Components\Textarea::make('html_content')
                                     ->label('HTML Content')
                                     ->rows(15)
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('response_type') === 'html' && !$get('template_id')
-                                    )
+                                    ->visible(fn (Forms\Get $get) => $get('response_type') === 'html')
                                     ->helperText('Enter your HTML content here'),
 
                                 // Markdown Content
                                 Forms\Components\Textarea::make('markdown')
                                     ->label('Markdown Content')
                                     ->rows(15)
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('response_type') === 'markdown' && !$get('template_id')
-                                    )
+                                    ->visible(fn (Forms\Get $get) => $get('response_type') === 'markdown')
                                     ->helperText('Write your content using Markdown syntax'),
 
                                 // JSON Content
                                 Forms\Components\Textarea::make('json_content')
                                     ->label('JSON Content')
                                     ->rows(15)
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('response_type') === 'json' && !$get('template_id')
-                                    )
+                                    ->visible(fn (Forms\Get $get) => $get('response_type') === 'json')
                                     ->helperText('Enter valid JSON data'),
 
-                                // Info when no content type selected or template is used
+                                // Info when template is used
                                 Forms\Components\Placeholder::make('content_info')
                                     ->label('')
-                                    ->content(function (Forms\Get $get) {
-                                        if ($get('template_id')) {
-                                            return 'Content is managed through the Template Content tab when using a template.';
-                                        }
-                                        return 'Select a content type in the Basic Info tab to start adding content.';
-                                    })
-                                    ->visible(fn (Forms\Get $get) =>
-                                        $get('template_id') ||
-                                        !in_array($get('response_type'), ['html', 'markdown', 'json'])
-                                    ),
+                                    ->content('Content is managed through the Template Content tab when using a template.')
+                                    ->visible(fn (Forms\Get $get) => $get('response_type') === 'template' && $get('template_id')),
                             ])
                             ->columnSpanFull(),
 
                         Forms\Components\Tabs\Tab::make('Template Content')
                             ->icon('heroicon-o-document-duplicate')
-                            ->schema(function (Forms\Get $get, ?Page $record) {
+                            ->visible(fn (Forms\Get $get) => $get('response_type') === 'template' && $get('template_id'))
+                            ->schema(function (Forms\Get $get) {
                                 $templateId = $get('template_id');
 
                                 if (!$templateId) {
@@ -168,9 +168,7 @@ class PageResource extends Resource
                                 }
 
                                 return $components;
-                            })
-                            ->visible(fn (Forms\Get $get) => (bool) $get('template_id'))
-                            ->columns(2),
+                            }),
                     ])
                     ->columnSpanFull(),
             ]);

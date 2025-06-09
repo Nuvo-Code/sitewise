@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PageResource\Pages;
 use App\Filament\Resources\PageResource;
 use App\Models\Page;
 use App\Services\TemplateContentService;
+use App\Services\BladeTemplateService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePage extends CreateRecord
@@ -35,6 +36,11 @@ class CreatePage extends CreateRecord
         // Auto-generate missing template content fields
         if ($this->record->template_id) {
             TemplateContentService::autoGenerateContentFields($this->record);
+        }
+
+        // Clear template cache to ensure fresh rendering
+        if ($this->record->template) {
+            BladeTemplateService::clearTemplateCache($this->record->template);
         }
     }
 

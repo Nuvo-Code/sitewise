@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PageResource\Pages;
 
 use App\Filament\Resources\PageResource;
 use App\Services\TemplateContentService;
+use App\Services\BladeTemplateService;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -38,11 +39,25 @@ class EditPage extends EditRecord
         // Store template content temporarily for after save
         $this->templateContent = $templateContent;
 
+        // Check if template has changed
+        $this->templateChanged = isset($data['template_id']) &&
+                                $data['template_id'] !== $this->record->template_id;
+
+        // Store old template for cache clearing
+        if ($this->templateChanged && $this->record->template) {
+            $this->oldTemplate = $this->record->template;
+        }
+
         return $data;
     }
 
     protected function afterSave(): void
     {
+        // Clear old template cache if template changed
+        if ($this->templateChanged && $this->oldTemplate) {
+            BladeTemplateService::clearTemplateCache($this->oldTemplate);
+        }
+
         // Save template content after page update
         if (!empty($this->templateContent) && $this->record->template_id) {
             TemplateContentService::updateContentForPage($this->record, $this->templateContent);
@@ -52,7 +67,14 @@ class EditPage extends EditRecord
         if ($this->record->template_id) {
             TemplateContentService::autoGenerateContentFields($this->record);
         }
+
+        // Clear new template cache to ensure fresh rendering
+        if ($this->record->template) {
+            BladeTemplateService::clearTemplateCache($this->record->template);
+        }
     }
 
     private array $templateContent = [];
+    private bool $templateChanged = false;
+    private $oldTemplate = null;
 }

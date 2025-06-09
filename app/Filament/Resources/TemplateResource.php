@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AbdelhamidErrahmouni\FilamentMonacoEditor\MonacoEditor;
 use App\Filament\Resources\TemplateResource\Pages;
 use App\Models\Template;
 use App\Services\BladeTemplateService;
@@ -203,11 +204,13 @@ class TemplateResource extends Resource
                         Forms\Components\Tabs\Tab::make('Blade Template')
                             ->icon('heroicon-o-code-bracket')
                             ->schema([
-                                Forms\Components\Textarea::make('blade_template')
+                                MonacoEditor::make('blade_template')
                                     ->label('Blade Template Content')
-                                    ->rows(20)
-                                    ->helperText('Define a Blade template to render pages with this template. Use variables like {{ $title }}, {{ $content }}, etc.')
-                                    ->placeholder('Enter Blade template HTML...')
+                                    ->columnSpanFull(),
+                                
+                                Forms\Components\Placeholder::make('template_info')
+                                    ->label('')
+                                    ->content('Define a Blade template to render pages with this template. Use variables like {{ $title }}, {{ $content }}, etc.')
                                     ->columnSpanFull(),
 
                                 Forms\Components\Actions::make([
