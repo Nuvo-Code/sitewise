@@ -84,7 +84,7 @@ class Template extends Model
                     'type' => $type,
                     'required' => false,
                     'description' => null,
-                    'default_value' => null,
+                    'default_value' => '', // Use empty string instead of null
                     'options' => [],
                     'validation_rules' => [],
                 ];

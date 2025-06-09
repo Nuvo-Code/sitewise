@@ -12,6 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 
 class PageResource extends Resource
 {
@@ -37,7 +39,12 @@ class PageResource extends Resource
                                     ->label('URL Slug')
                                     ->required()
                                     ->maxLength(255)
-                                    ->unique(Page::class, 'slug', ignoreRecord: true)
+                                    ->unique(
+                                        Page::class,
+                                        'slug',
+                                        ignoreRecord: true,
+                                        modifyRuleUsing: fn ($rule) => $rule->where('site_id', app('site')?->id)
+                                    )
                                     ->rules(['regex:/^[a-z0-9\-]+$/'])
                                     ->helperText('Only lowercase letters, numbers, and hyphens allowed')
                                     ->prefixIcon('heroicon-o-link'),

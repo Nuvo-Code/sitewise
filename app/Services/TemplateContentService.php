@@ -154,6 +154,11 @@ class TemplateContentService
         foreach ($content as $key => $value) {
             // Only save content for fields that exist in the template
             if (in_array($key, $templateFields)) {
+                // Ensure value is never null - use empty string as fallback
+                if ($value === null) {
+                    $value = '';
+                }
+
                 TemplateContent::updateOrCreate(
                     [
                         'page_id' => $page->id,
@@ -188,13 +193,19 @@ class TemplateContentService
 
         foreach ($templateFields as $field) {
             $key = $field['key'];
-            
+
             if (!in_array($key, $existingKeys)) {
+                // Ensure value is never null - use empty string as fallback
+                $defaultValue = $field['default_value'] ?? '';
+                if ($defaultValue === null) {
+                    $defaultValue = '';
+                }
+
                 TemplateContent::create([
                     'page_id' => $page->id,
                     'template_id' => $page->template_id,
                     'key' => $key,
-                    'value' => $field['default_value'] ?? '',
+                    'value' => $defaultValue,
                 ]);
             }
         }

@@ -15,6 +15,22 @@ class TemplateContent extends Model
         'value',
     ];
 
+    /**
+     * Ensure value is never null
+     */
+    public function getValueAttribute($value): string
+    {
+        return $value ?? '';
+    }
+
+    /**
+     * Ensure value is never null when setting
+     */
+    public function setValueAttribute($value): void
+    {
+        $this->attributes['value'] = $value ?? '';
+    }
+
     public function page(): BelongsTo
     {
         return $this->belongsTo(Page::class);
@@ -46,6 +62,11 @@ class TemplateContent extends Model
     public static function updateContentForPage(Page $page, array $content): void
     {
         foreach ($content as $key => $value) {
+            // Ensure value is never null - use empty string as fallback
+            if ($value === null) {
+                $value = '';
+            }
+
             static::updateOrCreate(
                 [
                     'page_id' => $page->id,

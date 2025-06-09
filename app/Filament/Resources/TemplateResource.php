@@ -25,7 +25,7 @@ class TemplateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Hidden::make('site_id')
-                    ->default(fn () => app('site')?->id),
+                    ->default(fn() => app('site')?->id),
 
                 Forms\Components\Tabs::make('Template Settings')
                     ->tabs([
@@ -40,17 +40,18 @@ class TemplateResource extends Resource
                                     ->prefixIcon('heroicon-o-document-duplicate')
                                     ->helperText('A unique name for this template'),
 
-                                Forms\Components\Textarea::make('description')
-                                    ->label('Description')
-                                    ->rows(3)
-                                    ->helperText('Optional description of what this template is for')
-                                    ->placeholder('Describe the purpose and usage of this template...'),
-
                                 Forms\Components\Toggle::make('active')
                                     ->label('Active')
                                     ->default(true)
                                     ->helperText('Enable to make this template available for pages')
                                     ->inline(false),
+
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Description')
+                                    ->rows(3)
+                                    ->helperText('Optional description of what this template is for')
+                                    ->placeholder('Describe the purpose and usage of this template...')
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2),
 
@@ -59,6 +60,7 @@ class TemplateResource extends Resource
                             ->schema([
                                 Forms\Components\Repeater::make('structure')
                                     ->label('Template Fields')
+                                    ->collapsed()
                                     ->schema([
                                         Forms\Components\TextInput::make('name')
                                             ->label('Field Name')
@@ -97,20 +99,73 @@ class TemplateResource extends Resource
                                             ->label('Field Description')
                                             ->rows(2)
                                             ->helperText('Optional description for content editors')
-                                            ->placeholder('Help text for content editors...'),
+                                            ->placeholder('Help text for content editors...')
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\Toggle::make('required')
+                                            ->label('Required Field')
+                                            ->default(false)
+                                            ->inline(false),
+
+                                        // Validation rules
+                                        Forms\Components\TagsInput::make('validation_rules')
+                                            ->label('Validation Rules')
+                                            ->helperText('Laravel validation rules (e.g., min:3, max:255)')
+                                            ->placeholder('Add validation rule'),
 
                                         Forms\Components\Group::make([
-                                            Forms\Components\Toggle::make('required')
-                                                ->label('Required Field')
-                                                ->default(false)
-                                                ->inline(false),
-
                                             Forms\Components\TextInput::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
-                                                ->placeholder('Default value...'),
-                                        ])
-                                        ->columns(2),
+                                                ->placeholder('Default value...')
+                                                ->visible(fn(Forms\Get $get) => in_array($get('type'), ['text', 'email', 'url']))
+                                                ->default(''),
+
+                                            Forms\Components\Textarea::make('default_value')
+                                                ->label('Default Value')
+                                                ->rows(2)
+                                                ->helperText('Optional default value for this field')
+                                                ->placeholder('Default value...')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'textarea'),
+
+                                            Forms\Components\RichEditor::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default value for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'rich_text'),
+
+                                            Forms\Components\TextInput::make('default_value')
+                                                ->label('Default Value')
+                                                ->numeric()
+                                                ->helperText('Optional default value for this field')
+                                                ->placeholder('0')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'number'),
+
+                                            Forms\Components\DatePicker::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default value for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'date'),
+
+                                            Forms\Components\DateTimePicker::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default value for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'datetime'),
+
+                                            Forms\Components\Select::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Select a default option')
+                                                ->options(fn(Forms\Get $get) => $get('options') ?? [])
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'select'),
+
+                                            Forms\Components\Toggle::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Default state for this field')
+                                                ->visible(fn(Forms\Get $get) => in_array($get('type'), ['checkbox', 'toggle'])),
+
+                                            Forms\Components\ColorPicker::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default color for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'color'),
+                                        ])->columnSpanFull(),
 
                                         // Options for select fields
                                         Forms\Components\KeyValue::make('options')
@@ -118,17 +173,11 @@ class TemplateResource extends Resource
                                             ->keyLabel('Value')
                                             ->valueLabel('Label')
                                             ->addActionLabel('Add Option')
-                                            ->visible(fn (Forms\Get $get) => $get('type') === 'select')
+                                            ->visible(fn(Forms\Get $get) => $get('type') === 'select')
                                             ->helperText('Define the available options for this select field'),
-
-                                        // Validation rules
-                                        Forms\Components\TagsInput::make('validation_rules')
-                                            ->label('Validation Rules')
-                                            ->helperText('Laravel validation rules (e.g., min:3, max:255)')
-                                            ->placeholder('Add validation rule'),
                                     ])
                                     ->columns(2)
-                                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Field')
+                                    ->itemLabel(fn(array $state): ?string => $state['name'] ?? 'New Field')
                                     ->addActionLabel('Add Template Field')
                                     ->reorderableWithButtons()
                                     ->collapsible()
@@ -176,7 +225,7 @@ class TemplateResource extends Resource
                                                 $set('blade_template', $sample);
                                             }
                                         })
-                                        ->visible(fn (Forms\Get $get) => !empty($get('structure')))
+                                        ->visible(fn(Forms\Get $get) => !empty($get('structure')))
                                         ->tooltip('Generate a sample Blade template based on your fields'),
 
                                     Forms\Components\Actions\Action::make('show_variables')
@@ -217,10 +266,10 @@ class TemplateResource extends Resource
                                         })
                                         ->modalSubmitAction(false)
                                         ->modalCancelActionLabel('Close')
-                                        ->visible(fn (Forms\Get $get) => !empty($get('structure')))
+                                        ->visible(fn(Forms\Get $get) => !empty($get('structure')))
                                         ->tooltip('View all available variables for your template'),
                                 ])
-                                ->columnSpanFull(),
+                                    ->columnSpanFull(),
                             ]),
                     ])
                     ->columnSpanFull(),
