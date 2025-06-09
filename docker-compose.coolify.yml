@@ -14,18 +14,22 @@ services:
       - APP_DEBUG=false
       - APP_KEY=${APP_KEY}
       - APP_PORT=${APP_PORT}
-      - APP_DOMAIN=${APP_DOMAIN}
-      - APP_URL=https://${APP_DOMAIN}
+      - APP_URL=http://localhost
       - DB_CONNECTION=pgsql
+      - DB_HOST=database
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
   database:
     image: postgres:17
     container_name: sitewise_db
     ports:
       - "${DB_PORT:-5432}:5432"
     environment:
-      - POSTGRES_DB=sitewise
-      - POSTGRES_USER=sitewise
-      - POSTGRES_PASSWORD=sitewise
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
 volumes:
