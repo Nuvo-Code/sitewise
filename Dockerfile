@@ -30,6 +30,6 @@ RUN composer install --prefer-dist --optimize-autoloader --no-interaction
 
 COPY unit.json /docker-entrypoint.d/unit.json
 
-EXPOSE 8000
+EXPOSE 80
 
 CMD ["unitd", "--no-daemon"]
