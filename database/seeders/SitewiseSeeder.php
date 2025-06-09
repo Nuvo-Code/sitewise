@@ -25,6 +25,7 @@ class SitewiseSeeder extends Seeder
                     'description' => 'A demo site for testing Sitewise functionality',
                 ],
                 'active' => true,
+                'is_setup_complete' => true, // Mark demo site as setup complete
             ]
         );
 

@@ -12,11 +12,13 @@ class Site extends Model
         'name',
         'settings',
         'active',
+        'is_setup_complete',
     ];
 
     protected $casts = [
         'settings' => 'array',
         'active' => 'boolean',
+        'is_setup_complete' => 'boolean',
     ];
 
     public function pages(): HasMany
@@ -40,6 +42,17 @@ class Site extends Model
             'domain' => $domain,
             'name' => ucfirst(str_replace(['.', '-', '_'], ' ', $domain)),
             'active' => true,
+            'is_setup_complete' => false,
         ]);
+    }
+
+    public function markSetupComplete(): void
+    {
+        $this->update(['is_setup_complete' => true]);
+    }
+
+    public function needsSetup(): bool
+    {
+        return !$this->is_setup_complete;
     }
 }

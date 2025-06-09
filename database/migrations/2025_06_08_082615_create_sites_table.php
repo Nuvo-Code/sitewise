@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->json('settings')->nullable();
             $table->boolean('active')->default(true);
+            $table->boolean('is_setup_complete')->default(false);
             $table->timestamps();
         });
     }

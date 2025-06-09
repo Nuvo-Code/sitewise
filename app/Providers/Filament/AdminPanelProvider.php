@@ -39,6 +39,8 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation()
             ->breadcrumbs(false)
             ->spa()
+            ->login()
+            ->authGuard('web')
             // ->maxContentWidth(MaxWidth::Full)
             // ->unsavedChangesAlerts()
 
@@ -46,6 +48,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                \App\Filament\Pages\SiteInstallation::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->middleware([
@@ -58,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\ResolveSiteMiddleware::class,
+                \App\Http\Middleware\RequireSiteSetupMiddleware::class,
             ])
             ->widgets([
                 \App\Filament\Widgets\SiteOverview::class,
