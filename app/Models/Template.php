@@ -14,6 +14,7 @@ class Template extends Model
         'name',
         'description',
         'structure',
+        'blade_template',
         'active',
     ];
 
@@ -102,6 +103,16 @@ class Template extends Model
     {
         $fields = $this->getFieldsForFormAttribute();
         return $fields[$key] ?? null;
+    }
+
+    public function hasBladeTemplate(): bool
+    {
+        return !empty($this->blade_template);
+    }
+
+    public function isBladeTemplate(): bool
+    {
+        return $this->hasBladeTemplate();
     }
 
     public function hasField(string $key): bool

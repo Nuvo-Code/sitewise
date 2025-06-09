@@ -49,6 +49,7 @@ class PageResource extends Resource
                                 'html' => 'HTML',
                                 'markdown' => 'Markdown',
                                 'json' => 'JSON',
+                                'template' => 'Template (Blade)',
                             ])
                             ->required()
                             ->default('html')
@@ -160,6 +161,7 @@ class PageResource extends Resource
                         'html' => 'primary',
                         'markdown' => 'success',
                         'json' => 'warning',
+                        'template' => 'info',
                         default => 'gray',
                     }),
 
@@ -182,6 +184,7 @@ class PageResource extends Resource
                         'html' => 'HTML',
                         'markdown' => 'Markdown',
                         'json' => 'JSON',
+                        'template' => 'Template',
                     ]),
                 Tables\Filters\TernaryFilter::make('active'),
                 Tables\Filters\SelectFilter::make('template_id')

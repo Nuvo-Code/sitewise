@@ -56,6 +56,7 @@ class Page extends Model
             'html' => $this->html_content ?? '',
             'markdown' => $this->markdown ?? '',
             'json' => json_encode($this->json_content ?? []),
+            'template' => '', // Template content is rendered dynamically
             default => '',
         };
     }
@@ -63,5 +64,10 @@ class Page extends Model
     public function hasTemplate(): bool
     {
         return !is_null($this->template_id);
+    }
+
+    public function isTemplateRendered(): bool
+    {
+        return $this->response_type === 'template' && $this->hasTemplate() && $this->template->hasBladeTemplate();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TemplateResource\Pages;
 use App\Models\Template;
+use App\Services\BladeTemplateService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -134,6 +135,75 @@ class TemplateResource extends Resource
                                 ],
                             ]),
                     ]),
+
+                Forms\Components\Section::make('Blade Template (Optional)')
+                    ->schema([
+                        Forms\Components\Textarea::make('blade_template')
+                            ->label('Blade Template Content')
+                            ->rows(15)
+                            ->helperText('Define a Blade template to render pages with this template. Use variables like {{ $title }}, {{ $content }}, etc.')
+                            ->placeholder('Enter Blade template HTML...')
+                            ->columnSpanFull(),
+
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('generate_sample')
+                                ->label('Generate Sample Template')
+                                ->icon('heroicon-o-sparkles')
+                                ->action(function (Forms\Set $set, Forms\Get $get) {
+                                    $structure = $get('structure') ?? [];
+                                    if (!empty($structure)) {
+                                        // Create a temporary template to generate sample
+                                        $tempTemplate = new Template();
+                                        $tempTemplate->structure = $structure;
+                                        $sample = BladeTemplateService::generateSampleBladeTemplate($tempTemplate);
+                                        $set('blade_template', $sample);
+                                    }
+                                })
+                                ->visible(fn (Forms\Get $get) => !empty($get('structure'))),
+
+                            Forms\Components\Actions\Action::make('show_variables')
+                                ->label('Show Available Variables')
+                                ->icon('heroicon-o-information-circle')
+                                ->modalHeading('Available Template Variables')
+                                ->modalContent(function (Forms\Get $get) {
+                                    $structure = $get('structure') ?? [];
+                                    if (empty($structure)) {
+                                        return 'Define template fields first to see available variables.';
+                                    }
+
+                                    $tempTemplate = new Template();
+                                    $tempTemplate->structure = $structure;
+                                    $variables = BladeTemplateService::getAvailableVariables($tempTemplate);
+
+                                    $content = '<div class="space-y-2">';
+                                    $content .= '<h4 class="font-semibold">System Variables:</h4>';
+                                    $content .= '<ul class="list-disc list-inside space-y-1">';
+                                    foreach (['page', 'site', 'template', 'content', 'page_title', 'page_slug', 'site_name', 'site_domain'] as $var) {
+                                        $content .= "<li><code>\${$var}</code> - {$variables[$var]}</li>";
+                                    }
+                                    $content .= '</ul>';
+
+                                    $fieldVars = array_filter($variables, fn($key) => !in_array($key, ['page', 'site', 'template', 'content', 'page_title', 'page_slug', 'site_name', 'site_domain']), ARRAY_FILTER_USE_KEY);
+                                    if (!empty($fieldVars)) {
+                                        $content .= '<h4 class="font-semibold mt-4">Template Field Variables:</h4>';
+                                        $content .= '<ul class="list-disc list-inside space-y-1">';
+                                        foreach ($fieldVars as $var => $desc) {
+                                            $content .= "<li><code>\${$var}</code> - {$desc}</li>";
+                                        }
+                                        $content .= '</ul>';
+                                    }
+                                    $content .= '</div>';
+
+                                    return new \Illuminate\Support\HtmlString($content);
+                                })
+                                ->modalSubmitAction(false)
+                                ->modalCancelActionLabel('Close')
+                                ->visible(fn (Forms\Get $get) => !empty($get('structure'))),
+                        ])
+                        ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 

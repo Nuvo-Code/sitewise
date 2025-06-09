@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Page;
+use App\Services\BladeTemplateService;
 use Illuminate\Support\Facades\Route;
 use League\CommonMark\CommonMarkConverter;
 
@@ -29,6 +30,7 @@ Route::get('/{slug}', function (string $slug) {
         'html' => response($page->html_content)->header('Content-Type', 'text/html'),
         'markdown' => response((new CommonMarkConverter())->convert($page->markdown))->header('Content-Type', 'text/html'),
         'json' => response()->json($page->json_content),
+        'template' => response(BladeTemplateService::renderPage($page))->header('Content-Type', 'text/html'),
         default => abort(500, 'Invalid page type'),
     };
 })->where('slug', '[a-z0-9\-]+');
