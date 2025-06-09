@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 
+use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
@@ -61,6 +62,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\ResolveSiteMiddleware::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
                 \App\Http\Middleware\RequireSiteSetupMiddleware::class,
             ])
             ->widgets([

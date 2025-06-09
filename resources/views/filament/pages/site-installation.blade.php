@@ -21,7 +21,6 @@
                     size="lg"
                     class="min-w-[120px]"
                 >
-                    <x-heroicon-m-check class="w-4 h-4 mr-2" />
                     Complete Setup
                 </x-filament::button>
             </div>

@@ -36,7 +36,12 @@ class RequireSiteSetupMiddleware
         if (!$request->is('admin*')) {
             return $next($request);
         }
-        
+
+        // Skip for authentication routes to avoid redirect loops
+        if ($request->routeIs('filament.admin.auth.*')) {
+            return $next($request);
+        }
+
         // Skip for Livewire requests to avoid redirect loops
         if ($request->header('X-Livewire')) {
             return $next($request);

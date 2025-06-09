@@ -208,10 +208,12 @@ class SiteResource extends Resource
                                 Forms\Components\Select::make('settings.language')
                                     ->label('Default Language')
                                     ->options([
+                                        'tr' => 'Turkish',
                                         'en' => 'English',
+                                        'et' => 'Estonian',
+                                        'de' => 'German',
                                         'es' => 'Spanish',
                                         'fr' => 'French',
-                                        'de' => 'German',
                                         'it' => 'Italian',
                                         'pt' => 'Portuguese',
                                         'ru' => 'Russian',
