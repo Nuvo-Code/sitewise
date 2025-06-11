@@ -1,0 +1,24 @@
+{
+    "name": "Blog",
+    "display_name": "Blog Module",
+    "description": "A simple blog module with posts and categories",
+    "version": "1.0.0",
+    "author": "Sitewise Team",
+    "active": true,
+    "dependencies": [],
+    "requirements": {
+        "php": "^8.2",
+        "laravel": "^11.0|^12.0"
+    },
+    "providers": [
+        "Modules\\Blog\\BlogServiceProvider"
+    ],
+    "aliases": [],
+    "files": [],
+    "tags": [
+        "blog",
+        "content",
+        "posts"
+    ],
+    "path": "\/var\/www\/html\/modules\/Blog"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "TestModule",
+    "display_name": "Test Module",
+    "description": "A test module for demonstration",
+    "version": "1.0.0",
+    "author": "Sitewise Team",
+    "active": true,
+    "dependencies": [],
+    "requirements": {
+        "php": "^8.2",
+        "laravel": "^11.0|^12.0"
+    },
+    "providers": [
+        "Modules\\TestModule\\TestModuleServiceProvider"
+    ],
+    "aliases": [],
+    "files": [],
+    "tags": [
+        "custom"
+    ],
+    "path": "\/var\/www\/html\/modules\/TestModule"
+}

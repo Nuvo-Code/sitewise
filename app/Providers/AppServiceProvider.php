@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\Template;
 use App\Models\TemplateContent;
 use App\Observers\CacheObserver;
+use App\Services\ModuleManager;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
@@ -18,7 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register ModuleManager as singleton
+        $this->app->singleton(ModuleManager::class);
     }
 
     /**
@@ -38,5 +40,9 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::HEAD_END,
             fn (): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
         );
+
+        // Register active modules
+        $moduleManager = app(ModuleManager::class);
+        $moduleManager->registerActiveModules();
     }
 }
