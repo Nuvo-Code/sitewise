@@ -72,10 +72,32 @@ class CacheService
     public static function getSite(int $siteId): ?Site
     {
         $key = self::siteKey(self::SITE_PREFIX, $siteId);
-        
-        return Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
             return Site::find($siteId);
         });
+
+        // Handle cache serialization issues - ensure we return a proper Site model or null
+        if ($cached === null) {
+            return null;
+        }
+
+        // If cached data is an array (serialization issue), recreate the model
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh model instance
+            return Site::find($siteId);
+        }
+
+        // If it's already a Site model, return it
+        if ($cached instanceof Site) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        return Site::find($siteId);
     }
 
     /**
@@ -84,10 +106,32 @@ class CacheService
     public static function getSiteByDomain(string $domain): ?Site
     {
         $key = self::siteKey(self::SITE_PREFIX, 0, "domain:{$domain}");
-        
-        return Cache::remember($key, self::getDefaultTTL(), function () use ($domain) {
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($domain) {
             return Site::where('domain', $domain)->first();
         });
+
+        // Handle cache serialization issues - ensure we return a proper Site model or null
+        if ($cached === null) {
+            return null;
+        }
+
+        // If cached data is an array (serialization issue), recreate the model
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh model instance
+            return Site::where('domain', $domain)->first();
+        }
+
+        // If it's already a Site model, return it
+        if ($cached instanceof Site) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        return Site::where('domain', $domain)->first();
     }
 
     /**
@@ -96,14 +140,44 @@ class CacheService
     public static function getPage(int $siteId, string $slug): ?Page
     {
         $key = self::siteKey(self::PAGE_PREFIX, $siteId, $slug);
-        
-        return Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $slug) {
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $slug) {
             return Page::where('site_id', $siteId)
                       ->where('slug', $slug)
                       ->where('active', true)
                       ->with(['template', 'templateContents'])
                       ->first();
         });
+
+        // Handle cache serialization issues - ensure we return a proper Page model or null
+        if ($cached === null) {
+            return null;
+        }
+
+        // If cached data is an array (serialization issue), recreate the model
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh model instance
+            return Page::where('site_id', $siteId)
+                      ->where('slug', $slug)
+                      ->where('active', true)
+                      ->with(['template', 'templateContents'])
+                      ->first();
+        }
+
+        // If it's already a Page model, return it
+        if ($cached instanceof Page) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        return Page::where('site_id', $siteId)
+                  ->where('slug', $slug)
+                  ->where('active', true)
+                  ->with(['template', 'templateContents'])
+                  ->first();
     }
 
     /**
@@ -112,13 +186,41 @@ class CacheService
     public static function getSitePages(int $siteId): Collection
     {
         $key = self::siteKey(self::PAGE_PREFIX, $siteId, 'all');
-        
-        return Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
             return Page::where('site_id', $siteId)
                       ->where('active', true)
                       ->with(['template'])
                       ->get();
         });
+
+        // Handle cache serialization issues - ensure we return a proper Collection
+        if ($cached === null) {
+            return collect();
+        }
+
+        // If cached data is an array (serialization issue), recreate the collection
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh collection
+            return Page::where('site_id', $siteId)
+                      ->where('active', true)
+                      ->with(['template'])
+                      ->get();
+        }
+
+        // If it's already a Collection, return it
+        if ($cached instanceof Collection) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        return Page::where('site_id', $siteId)
+                  ->where('active', true)
+                  ->with(['template'])
+                  ->get();
     }
 
     /**
@@ -127,13 +229,41 @@ class CacheService
     public static function getTemplate(int $siteId, int $templateId): ?Template
     {
         $key = self::siteKey(self::TEMPLATE_PREFIX, $siteId, $templateId);
-        
-        return Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $templateId) {
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $templateId) {
             return Template::where('site_id', $siteId)
                           ->where('id', $templateId)
                           ->where('active', true)
                           ->first();
         });
+
+        // Handle cache serialization issues - ensure we return a proper Template model or null
+        if ($cached === null) {
+            return null;
+        }
+
+        // If cached data is an array (serialization issue), recreate the model
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh model instance
+            return Template::where('site_id', $siteId)
+                          ->where('id', $templateId)
+                          ->where('active', true)
+                          ->first();
+        }
+
+        // If it's already a Template model, return it
+        if ($cached instanceof Template) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        return Template::where('site_id', $siteId)
+                      ->where('id', $templateId)
+                      ->where('active', true)
+                      ->first();
     }
 
     /**
