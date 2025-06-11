@@ -222,4 +222,79 @@ class EnhancedTemplateContentTest extends TestCase
         $this->assertEquals('text', $titleField['type']);
         $this->assertFalse($titleField['required']); // Default for converted fields
     }
+
+    public function test_code_editor_field_types_work()
+    {
+        // Create a template with code editor fields
+        $codeTemplate = Template::create([
+            'site_id' => $this->site->id,
+            'name' => 'Code Template',
+            'description' => 'A template with code editor fields',
+            'structure' => [
+                [
+                    'name' => 'Custom HTML',
+                    'key' => 'custom_html',
+                    'type' => 'html',
+                    'required' => false,
+                    'description' => 'Custom HTML code',
+                    'default_value' => '<div>Default HTML</div>',
+                    'options' => [],
+                    'validation_rules' => [],
+                ],
+                [
+                    'name' => 'Custom CSS',
+                    'key' => 'custom_css',
+                    'type' => 'css',
+                    'required' => false,
+                    'description' => 'Custom CSS styles',
+                    'default_value' => '.custom { color: red; }',
+                    'options' => [],
+                    'validation_rules' => [],
+                ],
+                [
+                    'name' => 'Custom JavaScript',
+                    'key' => 'custom_js',
+                    'type' => 'javascript',
+                    'required' => false,
+                    'description' => 'Custom JavaScript code',
+                    'default_value' => 'console.log("Hello World");',
+                    'options' => [],
+                    'validation_rules' => [],
+                ],
+            ],
+            'active' => true,
+        ]);
+
+        // Test that form components are generated correctly
+        $components = TemplateContentService::generateFormComponents($codeTemplate);
+        $this->assertCount(3, $components);
+
+        $componentNames = array_map(fn($component) => $component->getName(), $components);
+        $this->assertContains('template_content.custom_html', $componentNames);
+        $this->assertContains('template_content.custom_css', $componentNames);
+        $this->assertContains('template_content.custom_js', $componentNames);
+
+        // Test saving and retrieving code content
+        $page = Page::create([
+            'site_id' => $this->site->id,
+            'slug' => 'code-test-page',
+            'title' => 'Code Test Page',
+            'response_type' => 'html',
+            'template_id' => $codeTemplate->id,
+            'active' => true,
+        ]);
+
+        $codeContent = [
+            'custom_html' => '<div class="hero"><h1>Welcome</h1></div>',
+            'custom_css' => '.hero { background: blue; color: white; }',
+            'custom_js' => 'document.addEventListener("DOMContentLoaded", function() { console.log("Page loaded"); });',
+        ];
+
+        TemplateContentService::updateContentForPage($page, $codeContent);
+        $retrievedContent = TemplateContentService::getContentForPage($page);
+
+        $this->assertEquals('<div class="hero"><h1>Welcome</h1></div>', $retrievedContent['custom_html']);
+        $this->assertEquals('.hero { background: blue; color: white; }', $retrievedContent['custom_css']);
+        $this->assertEquals('document.addEventListener("DOMContentLoaded", function() { console.log("Page loaded"); });', $retrievedContent['custom_js']);
+    }
 }

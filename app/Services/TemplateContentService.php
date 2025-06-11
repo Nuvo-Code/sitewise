@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Template;
 use App\Models\TemplateContent;
 use Filament\Forms\Components;
+use Wiebenieuwenhuis\FilamentCodeEditor\Components\CodeEditor;
 
 class TemplateContentService
 {
@@ -56,6 +57,15 @@ class TemplateContentService
                     'h2', 'h3', 'bulletList', 'orderedList',
                     'link', 'blockquote', 'codeBlock',
                 ]),
+
+            'html' => CodeEditor::make("template_content.{$key}")
+                ->label($name),
+
+            'css' => CodeEditor::make("template_content.{$key}")
+                ->label($name),
+
+            'javascript' => CodeEditor::make("template_content.{$key}")
+                ->label($name),
 
             'number' => Components\TextInput::make("template_content.{$key}")
                 ->label($name)

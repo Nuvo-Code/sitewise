@@ -160,7 +160,7 @@ class BladeTemplateService
         // Add template fields as available variables
         $fields = $template->getFieldsForFormAttribute();
         foreach ($fields as $field) {
-            $variables[$field['key']] = $field['description'] ?: $field['name'];
+            $variables['template_content[\'' . $field['type']['key'] . '\']'] = $field['description'] ?: $field['type']['name'];
         }
 
         return $variables;
@@ -201,7 +201,7 @@ class BladeTemplateService
             $name = $field['type']['name'];
             $type = $field['type']['type'];
 
-            $sample .= "            {{-- {$name} ({$id}) --}}\n";
+            $sample .= "            <!-- {{-- {$name} ({$id}) --}} -->\n";
             
             if ($type === 'rich_text' || $type === 'textarea') {
                 $sample .= "            <div class=\"{$id}\">\n";

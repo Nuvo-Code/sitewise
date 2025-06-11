@@ -38,6 +38,9 @@ Templates now use a rich structure format where each field is defined as an obje
 | `text` | Single line text input | TextInput |
 | `textarea` | Multi-line text input | Textarea |
 | `rich_text` | WYSIWYG rich text editor | RichEditor |
+| `html` | HTML code editor with syntax highlighting | CodeEditor (html) |
+| `css` | CSS code editor with syntax highlighting | CodeEditor (css) |
+| `javascript` | JavaScript code editor with syntax highlighting | CodeEditor (javascript) |
 | `number` | Numeric input | TextInput (numeric) |
 | `email` | Email address input | TextInput (email) |
 | `url` | URL input | TextInput (url) |
@@ -211,6 +214,33 @@ The rich text editor includes the following toolbar buttons:
 - Bullet and ordered lists
 - Links and blockquotes
 - Code blocks
+
+## Code Editors
+
+The platform includes advanced code editors for HTML, CSS, and JavaScript fields:
+
+### HTML Code Editor
+- Syntax highlighting for HTML
+- Auto-completion for HTML tags and attributes
+- Bracket matching and indentation
+- Perfect for custom HTML snippets, embeds, or structured content
+
+### CSS Code Editor
+- CSS syntax highlighting and validation
+- Auto-completion for CSS properties and values
+- Useful for custom styling, component-specific CSS, or theme overrides
+
+### JavaScript Code Editor
+- JavaScript syntax highlighting
+- Auto-completion for JavaScript keywords and functions
+- Ideal for custom scripts, analytics code, or interactive elements
+
+All code editors feature:
+- Line numbers
+- Syntax error detection
+- Code folding
+- Find and replace functionality
+- Multiple cursor support
 
 ## Validation
 

@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Wiebenieuwenhuis\FilamentCodeEditor\Components\CodeEditor;
 
 class TemplateResource extends Resource
 {
@@ -81,6 +82,9 @@ class TemplateResource extends Resource
                                                 'text' => 'Text Input',
                                                 'textarea' => 'Textarea',
                                                 'rich_text' => 'Rich Text Editor',
+                                                'html' => 'HTML (Code Editor)',
+                                                'css' => 'CSS (Code Editor)',
+                                                'javascript' => 'JavaScript (Code Editor)',
                                                 'number' => 'Number',
                                                 'email' => 'Email',
                                                 'url' => 'URL',
@@ -133,6 +137,21 @@ class TemplateResource extends Resource
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
                                                 ->visible(fn(Forms\Get $get) => $get('type') === 'rich_text'),
+
+                                            CodeEditor::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default HTML code for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'html'),
+
+                                            CodeEditor::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default CSS code for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'css'),
+
+                                            CodeEditor::make('default_value')
+                                                ->label('Default Value')
+                                                ->helperText('Optional default JavaScript code for this field')
+                                                ->visible(fn(Forms\Get $get) => $get('type') === 'javascript'),
 
                                             Forms\Components\TextInput::make('default_value')
                                                 ->label('Default Value')
