@@ -7,6 +7,8 @@ use App\Models\Page;
 use App\Models\Template;
 use App\Models\TemplateContent;
 use App\Observers\CacheObserver;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +33,10 @@ class AppServiceProvider extends ServiceProvider
         Page::observe($cacheObserver);
         Template::observe($cacheObserver);
         TemplateContent::observe($cacheObserver);
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEAD_END,
+            fn (): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
+        );
     }
 }

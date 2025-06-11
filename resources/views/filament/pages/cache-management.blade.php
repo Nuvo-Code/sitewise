@@ -29,7 +29,7 @@
                 {{ $site->name }} - Cache Management
             </h3>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-4 md:grid-cols-2 gap-4">
                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                     <div class="text-sm font-medium text-blue-600 dark:text-blue-400">Domain</div>
                     <div class="text-lg font-bold text-blue-900 dark:text-blue-100">
@@ -74,7 +74,7 @@
                 @endif
             </h3>
             
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
                         {{ number_format($siteCacheUsage['site'] ?? 0) }}
