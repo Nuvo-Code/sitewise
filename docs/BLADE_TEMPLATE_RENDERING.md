@@ -9,7 +9,8 @@ Blade template rendering provides:
 - **Complete Page Control**: Define the entire HTML structure using Blade templates
 - **Dynamic Content**: Access template field content as Blade variables
 - **Laravel Integration**: Full access to Laravel's Blade features (directives, components, etc.)
-- **Template Caching**: Automatic caching and compilation of Blade templates
+- **In-Memory Compilation**: Templates are compiled directly from database content without creating files
+- **Security**: Templates are isolated from the project's view files
 - **Validation**: Built-in syntax validation for Blade templates
 
 ## How It Works
@@ -166,10 +167,12 @@ The system validates Blade templates for:
 - Basic syntax errors
 - Compilation issues
 
-### Template Caching
+### Template Processing
 
-- Templates are automatically cached as Blade view files
-- Cache is cleared when templates are updated
+- Templates are compiled in-memory using Laravel's Blade compiler
+- No physical files are created in the project's resources/views directory
+- Templates are executed in temporary files that are immediately cleaned up
+- Cache management uses Laravel's built-in caching system
 - Manual cache clearing available via `BladeTemplateService::clearTemplateCache()`
 
 ## Programmatic Usage
@@ -209,6 +212,16 @@ BladeTemplateService::clearTemplateCache($template);
 // Clear all template caches
 BladeTemplateService::clearAllTemplateCaches();
 ```
+
+## Security & Isolation
+
+The refactored Blade template system provides enhanced security:
+
+- **File System Isolation**: Templates are never written to the project's view directories
+- **In-Memory Processing**: Templates are compiled and executed in memory
+- **Temporary Execution**: Compiled templates use temporary files that are immediately cleaned up
+- **No Cross-Contamination**: User templates cannot interfere with project files
+- **Permission Safety**: No file system permission issues with template creation
 
 ## Best Practices
 

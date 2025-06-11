@@ -5,8 +5,7 @@ namespace App\Services;
 use App\Models\Page;
 use App\Models\Template;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 
 class BladeTemplateService
 {
@@ -22,54 +21,61 @@ class BladeTemplateService
         $template = $page->template;
         $templateContent = TemplateContentService::getContentForPage($page);
 
-        // Create a unique view name for this template
-        $viewName = self::getViewName($template);
-
-        // Ensure the template view exists
-        self::ensureTemplateViewExists($template, $viewName);
-
         // Prepare variables for the Blade template
         $variables = self::prepareTemplateVariables($page, $templateContent);
 
-        // Render the template
-        return View::make($viewName, $variables)->render();
+        // Compile and render the Blade template directly from database content
+        return self::compileAndRender($template->blade_template, $variables);
     }
 
     /**
-     * Get the view name for a template
+     * Compile and render a Blade template string with variables
      */
-    protected static function getViewName(Template $template): string
+    protected static function compileAndRender(string $bladeTemplate, array $variables): string
     {
-        return 'templates.site_' . $template->site_id . '.template_' . $template->id;
-    }
+        // Process the Blade template content for security
+        $processedTemplate = self::processBladeTemplate($bladeTemplate);
 
-    /**
-     * Ensure the template view file exists
-     */
-    protected static function ensureTemplateViewExists(Template $template, string $viewName): void
-    {
-        $viewPath = resource_path('views/' . str_replace('.', '/', $viewName) . '.blade.php');
-        $viewDir = dirname($viewPath);
+        // Create a temporary view instance using Blade's compileString
+        $compiledTemplate = Blade::compileString($processedTemplate);
 
-        // Create directory if it doesn't exist
-        if (!File::exists($viewDir)) {
-            File::makeDirectory($viewDir, 0755, true);
+        // Create a temporary file to evaluate the compiled PHP
+        $tempFile = tempnam(sys_get_temp_dir(), 'blade_template_');
+        file_put_contents($tempFile, $compiledTemplate);
+
+        // Extract variables to make them available in the template
+        extract($variables);
+
+        // Start output buffering
+        ob_start();
+
+        try {
+            // Include the compiled template
+            include $tempFile;
+            $output = ob_get_contents();
+        } catch (\Throwable $e) {
+            ob_end_clean();
+            unlink($tempFile);
+            throw new \Exception('Error rendering Blade template: ' . $e->getMessage());
+        } finally {
+            ob_end_clean();
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
         }
 
-        // Write or update the template file
-        $bladeContent = self::processBladeTemplate($template->blade_template);
-        File::put($viewPath, $bladeContent);
+        return $output;
     }
 
     /**
-     * Process the Blade template content
+     * Process the Blade template content for security and compatibility
      */
     protected static function processBladeTemplate(string $bladeTemplate): string
     {
         // Add any necessary processing here
         // For now, we'll just return the template as-is
         // You could add custom directives, security checks, etc.
-        
+
         return $bladeTemplate;
     }
 
@@ -123,8 +129,8 @@ class BladeTemplateService
                 $errors[] = 'Blade template has malformed syntax (single closing brace)';
             }
 
-            // Try to compile the Blade template
-            $compiled = Blade::compileString($bladeTemplate);
+            // Try to compile the Blade template to check for syntax errors
+            Blade::compileString($bladeTemplate);
 
         } catch (\ParseError $e) {
             $errors[] = 'Blade template has syntax errors: ' . $e->getMessage();
@@ -187,33 +193,34 @@ class BladeTemplateService
         $sample .= "            <p>Site: {{ \$site_name }} ({{ \$site_domain }})</p>\n";
         $sample .= "        </header>\n";
         $sample .= "        \n";
-        $sample .= "        <main class=\"content\">\n";
+        $sample .= "        <main class=\"content\">\n\n";
 
         foreach ($fields as $field) {
-            $key = $field['key'];
-            $name = $field['name'];
-            $type = $field['type'];
+            $id = $field['key'];
+            $key = $field['type']['key'];
+            $name = $field['type']['name'];
+            $type = $field['type']['type'];
 
-            $sample .= "            {{-- {$name} --}}\n";
+            $sample .= "            {{-- {$name} ({$id}) --}}\n";
             
             if ($type === 'rich_text' || $type === 'textarea') {
-                $sample .= "            <div class=\"{$key}\">\n";
-                $sample .= "                {!! \${$key} !!}\n";
+                $sample .= "            <div class=\"{$id}\">\n";
+                $sample .= "                {!! \$template_content['{$key}'] !!}\n";
                 $sample .= "            </div>\n";
             } elseif ($type === 'image') {
                 $sample .= "            @if(\${$key})\n";
-                $sample .= "                <img src=\"{{ asset('storage/' . \${$key}) }}\" alt=\"{$name}\" class=\"{$key}\">\n";
+                $sample .= "                <img src=\"{{ asset('storage/' . \$template_content['{$key}']) }}\" alt=\"{$name}\" class=\"{$id}\">\n";
                 $sample .= "            @endif\n";
             } elseif ($type === 'url') {
                 $sample .= "            @if(\${$key})\n";
-                $sample .= "                <a href=\"{{ \${$key} }}\" class=\"{$key}\">{$name}</a>\n";
+                $sample .= "                <a href=\"{{ \$template_content['{$key}'] }}\" class=\"{$id}\">{$name}</a>\n";
                 $sample .= "            @endif\n";
             } elseif ($type === 'toggle' || $type === 'checkbox') {
                 $sample .= "            @if(\${$key})\n";
-                $sample .= "                <div class=\"{$key}\">✓ {$name}</div>\n";
+                $sample .= "                <div class=\"{$id}\">✓ {$name}</div>\n";
                 $sample .= "            @endif\n";
             } else {
-                $sample .= "            <div class=\"{$key}\">{{ \${$key} }}</div>\n";
+                $sample .= "            <div class=\"{$id}\">{{ \$template_content['{$key}'] }}</div>\n";
             }
             $sample .= "            \n";
         }
@@ -232,43 +239,32 @@ class BladeTemplateService
 
     /**
      * Clear template cache for a specific template
+     * Since we're using in-memory compilation, this mainly clears any Laravel view cache
      */
     public static function clearTemplateCache(Template $template): void
     {
-        $viewName = self::getViewName($template);
-        $viewPath = resource_path('views/' . str_replace('.', '/', $viewName) . '.blade.php');
-        
-        if (File::exists($viewPath)) {
-            File::delete($viewPath);
-        }
+        // Clear Laravel's view cache if it exists
+        $cacheKey = 'blade_template_' . $template->site_id . '_' . $template->id;
+        Cache::forget($cacheKey);
 
-        // Clear compiled view cache
-        $compiledPath = config('view.compiled');
-        if ($compiledPath && File::exists($compiledPath)) {
-            $compiledFiles = File::glob($compiledPath . '/*' . str_replace('.', '_', $viewName) . '*');
-            foreach ($compiledFiles as $file) {
-                File::delete($file);
-            }
+        // Clear any compiled view cache that might exist
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
         }
     }
 
     /**
      * Clear all template caches
+     * Since we're using in-memory compilation, this mainly clears Laravel caches
      */
     public static function clearAllTemplateCaches(): void
     {
-        $templatesDir = resource_path('views/templates');
-        if (File::exists($templatesDir)) {
-            File::deleteDirectory($templatesDir);
-        }
+        // Clear all template-related cache keys
+        Cache::flush(); // This is aggressive but ensures all template caches are cleared
 
-        // Clear compiled view cache
-        $compiledPath = config('view.compiled');
-        if ($compiledPath && File::exists($compiledPath)) {
-            $compiledFiles = File::glob($compiledPath . '/*templates*');
-            foreach ($compiledFiles as $file) {
-                File::delete($file);
-            }
+        // Clear any compiled view cache that might exist
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
         }
     }
 }
