@@ -15,44 +15,48 @@ class CachePerformanceWidget extends BaseWidget
     protected function getStats(): array
     {
         $site = app('site');
-        $siteId = $site?->id ?? 0;
-        
-        $cacheStats = CacheService::getCacheStats();
-        $siteCacheUsage = $siteId ? CacheService::getSiteCacheUsage($siteId) : [];
-        
+
+        if (!$site) {
+            return [
+                Stat::make('No Site Available', 'N/A')
+                    ->description('Cache stats require a valid site')
+                    ->descriptionIcon('heroicon-m-exclamation-triangle')
+                    ->color('warning'),
+            ];
+        }
+
+        $cacheWorking = CacheService::isCacheWorking();
+        $siteCacheUsage = CacheService::getSiteCacheUsage($site->id);
+
         $stats = [];
 
-        // Cache Hit Rate
-        $hitRate = $cacheStats['hit_rate'] ?? 0;
-        $hitRateColor = $hitRate >= 80 ? 'success' : ($hitRate >= 60 ? 'warning' : 'danger');
-        
-        $stats[] = Stat::make('Cache Hit Rate', $hitRate . '%')
-            ->description($this->getHitRateDescription($hitRate))
-            ->descriptionIcon($this->getHitRateIcon($hitRate))
-            ->color($hitRateColor);
+        // Cache Status
+        $stats[] = Stat::make('Cache Status', $cacheWorking ? 'Working' : 'Unavailable')
+            ->description($cacheWorking ? 'Cache system operational' : 'Cache system not working')
+            ->descriptionIcon($cacheWorking ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+            ->color($cacheWorking ? 'success' : 'danger');
 
-        // Total Cache Keys
-        $totalKeys = $cacheStats['total_keys'] ?? 0;
-        $stats[] = Stat::make('Total Cache Keys', number_format($totalKeys))
-            ->description('System-wide cached items')
-            ->descriptionIcon('heroicon-m-key')
-            ->color('info');
+        // Site Cache Keys
+        $totalSiteKeys = array_sum($siteCacheUsage);
+        $description = $cacheWorking ? $site->name . ' cached items' : 'Simulated data (cache unavailable)';
+        $stats[] = Stat::make('Site Cache Keys', number_format($totalSiteKeys))
+            ->description($description)
+            ->descriptionIcon('heroicon-m-building-office')
+            ->color($cacheWorking ? 'primary' : 'warning');
 
-        // Memory Usage
-        $memoryUsage = $cacheStats['memory_usage'] ?? '0B';
-        $stats[] = Stat::make('Cache Memory', $memoryUsage)
-            ->description('Current memory usage')
-            ->descriptionIcon('heroicon-m-cpu-chip')
-            ->color('primary');
+        // Pages Cache
+        $pagesCache = $siteCacheUsage['pages'] ?? 0;
+        $stats[] = Stat::make('Pages Cached', number_format($pagesCache))
+            ->description($cacheWorking ? 'Cached page content' : 'Simulated count')
+            ->descriptionIcon('heroicon-m-document-text')
+            ->color($cacheWorking ? 'success' : 'warning');
 
-        // Site Cache Usage (if available)
-        if ($siteId && !empty($siteCacheUsage)) {
-            $totalSiteKeys = array_sum($siteCacheUsage);
-            $stats[] = Stat::make('Site Cache Keys', number_format($totalSiteKeys))
-                ->description('Current site cached items')
-                ->descriptionIcon('heroicon-m-building-office')
-                ->color('success');
-        }
+        // Templates Cache
+        $templatesCache = ($siteCacheUsage['templates'] ?? 0) + ($siteCacheUsage['blade_templates'] ?? 0);
+        $stats[] = Stat::make('Templates Cached', number_format($templatesCache))
+            ->description($cacheWorking ? 'Template definitions & renders' : 'Simulated count')
+            ->descriptionIcon('heroicon-m-squares-2x2')
+            ->color($cacheWorking ? 'info' : 'warning');
 
         return $stats;
     }
@@ -85,7 +89,6 @@ class CachePerformanceWidget extends BaseWidget
 
     public function getColumns(): int
     {
-        $site = app('site');
-        return $site ? 4 : 3;
+        return 4;
     }
 }

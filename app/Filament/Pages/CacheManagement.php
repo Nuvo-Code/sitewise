@@ -31,107 +31,112 @@ class CacheManagement extends Page
     {
         $site = app('site');
 
-        return [
-            Action::make('clear_all_cache')
-                ->label('Clear All Cache')
-                ->icon('heroicon-o-trash')
-                ->color('danger')
-                ->requiresConfirmation()
-                ->modalHeading('Clear All Cache')
-                ->modalDescription('This will clear all cached data across the entire application. Are you sure?')
-                ->action(function () {
-                    CacheService::clearAllCache();
-                    
-                    Notification::make()
-                        ->title('All cache cleared successfully')
-                        ->success()
-                        ->send();
-                        
-                    $this->redirect(request()->header('Referer'));
-                }),
+        if (!$site) {
+            return [];
+        }
 
+        return [
             Action::make('clear_site_cache')
                 ->label('Clear Site Cache')
                 ->icon('heroicon-o-building-office')
-                ->color('warning')
-                ->visible(fn () => $site && $site->id > 0)
+                ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading('Clear Site Cache')
-                ->modalDescription('This will clear all cached data for the current site. Are you sure?')
+                ->modalDescription('This will clear all cached data for ' . $site->name . '. Are you sure?')
                 ->action(function () use ($site) {
-                    if ($site) {
-                        CacheService::clearSiteCache($site->id);
-                        
-                        Notification::make()
-                            ->title('Site cache cleared successfully')
-                            ->success()
-                            ->send();
-                            
-                        $this->redirect(request()->header('Referer'));
-                    }
+                    CacheService::clearSiteCache($site->id);
+
+                    Notification::make()
+                        ->title('Site cache cleared successfully')
+                        ->success()
+                        ->send();
+
+                    $this->redirect(request()->header('Referer'));
                 }),
 
             Action::make('warm_site_cache')
                 ->label('Warm Site Cache')
                 ->icon('heroicon-o-fire')
                 ->color('success')
-                ->visible(fn () => $site && $site->id > 0)
                 ->action(function () use ($site) {
-                    if ($site) {
-                        $warmed = CacheService::warmSiteCache($site->id);
-                        
-                        $message = sprintf(
-                            'Cache warmed: %d pages, %d templates',
-                            $warmed['pages'] ?? 0,
-                            $warmed['templates'] ?? 0
-                        );
-                        
-                        Notification::make()
-                            ->title('Site cache warmed successfully')
-                            ->body($message)
-                            ->success()
-                            ->send();
-                            
-                        $this->redirect(request()->header('Referer'));
-                    }
+                    $warmed = CacheService::warmSiteCache($site->id);
+
+                    $message = sprintf(
+                        'Cache warmed: %d pages, %d templates',
+                        $warmed['pages'] ?? 0,
+                        $warmed['templates'] ?? 0
+                    );
+
+                    Notification::make()
+                        ->title('Site cache warmed successfully')
+                        ->body($message)
+                        ->success()
+                        ->send();
+
+                    $this->redirect(request()->header('Referer'));
                 }),
 
             Action::make('clear_pages_cache')
                 ->label('Clear Pages Cache')
                 ->icon('heroicon-o-document-text')
                 ->color('warning')
-                ->visible(fn () => $site && $site->id > 0)
                 ->requiresConfirmation()
+                ->modalHeading('Clear Pages Cache')
+                ->modalDescription('This will clear all page cache for ' . $site->name . '.')
                 ->action(function () use ($site) {
-                    if ($site) {
-                        CacheService::clearPageCache($site->id);
-                        
-                        Notification::make()
-                            ->title('Pages cache cleared successfully')
-                            ->success()
-                            ->send();
-                            
-                        $this->redirect(request()->header('Referer'));
-                    }
+                    CacheService::clearPageCache($site->id);
+
+                    Notification::make()
+                        ->title('Pages cache cleared successfully')
+                        ->success()
+                        ->send();
+
+                    $this->redirect(request()->header('Referer'));
                 }),
 
             Action::make('clear_templates_cache')
                 ->label('Clear Templates Cache')
                 ->icon('heroicon-o-squares-2x2')
                 ->color('warning')
-                ->visible(fn () => $site && $site->id > 0)
                 ->requiresConfirmation()
+                ->modalHeading('Clear Templates Cache')
+                ->modalDescription('This will clear all template cache for ' . $site->name . '.')
                 ->action(function () use ($site) {
-                    if ($site) {
-                        CacheService::clearTemplateCache($site->id);
-                        
-                        Notification::make()
-                            ->title('Templates cache cleared successfully')
-                            ->success()
-                            ->send();
-                            
-                        $this->redirect(request()->header('Referer'));
-                    }
+                    CacheService::clearTemplateCache($site->id);
+
+                    Notification::make()
+                        ->title('Templates cache cleared successfully')
+                        ->success()
+                        ->send();
+
+                    $this->redirect(request()->header('Referer'));
+                }),
+
+            Action::make('debug_cache')
+                ->label('Debug Cache')
+                ->icon('heroicon-o-bug-ant')
+                ->color('gray')
+                ->action(function () use ($site) {
+                    // Populate some test cache data
+                    $populated = CacheService::populateTestCache($site->id);
+
+                    // Debug cache keys
+                    $debug = CacheService::debugSiteCacheKeys($site->id);
+
+                    $message = "Test cache populated:\n" .
+                              "Site: " . ($populated['site'] ?? 'none') . "\n" .
+                              "Page: " . ($populated['page'] ?? 'none') . "\n" .
+                              "Template: " . ($populated['template'] ?? 'none') . "\n" .
+                              "Stats: " . ($populated['stats'] ?? 'none') . "\n\n" .
+                              "Debug info: " . json_encode($debug, JSON_PRETTY_PRINT);
+
+                    Notification::make()
+                        ->title('Cache Debug Complete')
+                        ->body($message)
+                        ->success()
+                        ->send();
+
+                    $this->redirect(request()->header('Referer'));
                 }),
         ];
     }

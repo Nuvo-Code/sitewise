@@ -12,11 +12,11 @@ The Sitewise platform includes a comprehensive caching system designed to improv
 - **Statistics Caching**: Site statistics with shorter TTL for real-time feel
 
 ### 🎛️ Admin Panel Management
-- **Cache Resource**: Dedicated FilamentPHP resource for cache management
-- **Cache Statistics**: Real-time cache performance metrics
-- **Selective Clearing**: Clear specific cache types (pages, templates, site-specific)
-- **Cache Warming**: Pre-populate cache for better performance
-- **Performance Monitoring**: Cache hit rates and memory usage tracking
+- **Site-Specific Cache Management**: Dedicated FilamentPHP page for current site cache management
+- **Site Cache Statistics**: Real-time cache metrics for the current site
+- **Selective Clearing**: Clear specific cache types (pages, templates) for current site
+- **Cache Warming**: Pre-populate cache for the current site
+- **Site Performance Monitoring**: Site-specific cache usage and performance tracking
 
 ### 🔄 Automatic Cache Invalidation
 - **Model Observers**: Automatic cache clearing when data changes
@@ -60,12 +60,13 @@ SITEWISE_AUTO_WARM=true      # Enable automatic cache warming
 
 ### Admin Panel
 
-Access cache management through the admin panel:
+Access site-specific cache management through the admin panel:
 
 1. **Navigation**: Go to System → Cache Management
-2. **View Statistics**: See cache performance metrics and usage
-3. **Clear Cache**: Use action buttons to clear specific cache types
-4. **Warm Cache**: Pre-populate cache for better performance
+2. **View Site Statistics**: See cache metrics and usage for the current site
+3. **Clear Site Cache**: Use action buttons to clear cache for the current site
+4. **Warm Site Cache**: Pre-populate cache for the current site
+5. **Selective Clearing**: Clear only pages or templates cache as needed
 
 ### Artisan Commands
 
@@ -186,13 +187,44 @@ This ensures that:
 - Smart invalidation based on relationships
 
 ### FilamentPHP Integration
-- `CacheResource`: Admin interface for cache management
-- `CachePerformanceWidget`: Dashboard performance metrics
-- Modal views for detailed statistics
+- `CacheManagement`: Site-specific admin page for cache management
+- `CachePerformanceWidget`: Site-focused dashboard performance metrics
+- Site-scoped cache statistics and controls
 
 ### Artisan Commands
 - `CacheManagementCommand`: CLI interface for cache operations
 - Support for site-specific and type-specific operations
 - Detailed statistics and usage information
 
-This cache system provides a robust foundation for high-performance multi-tenant websites while maintaining ease of use and comprehensive management capabilities.
+## Site-Specific Cache Management
+
+The cache management interface is designed to be **site-specific**, meaning:
+
+### 🏢 **Current Site Focus**
+- Admin panel shows only the current site's cache data
+- All cache operations are scoped to the current site
+- No global cache statistics or cross-site data exposure
+- Site-specific cache keys and usage metrics
+
+### 🔒 **Multi-Tenant Security**
+- Each site can only manage its own cache
+- No access to other sites' cached data
+- Domain-based isolation ensures data privacy
+- Site administrators see only relevant information
+
+### 🎯 **Benefits of Site-Specific Approach**
+- **Simplified Interface**: Users see only what's relevant to their site
+- **Enhanced Security**: No cross-site data exposure
+- **Better Performance**: Focused metrics and operations
+- **Clearer Actions**: All operations clearly scoped to current site
+- **Reduced Confusion**: No global settings that might affect other sites
+
+### 📊 **What You'll See**
+- Cache breakdown by type (pages, templates, content) for your site
+- Site-specific cache key counts and usage
+- Actions that only affect your current site
+- Command examples tailored to your site's domain
+
+This approach ensures that each site administrator has a clear, secure, and focused cache management experience without the complexity of system-wide cache administration.
+
+This cache system provides a robust foundation for high-performance multi-tenant websites while maintaining ease of use, security, and site-specific management capabilities.

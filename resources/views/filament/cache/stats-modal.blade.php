@@ -1,11 +1,12 @@
 <div class="space-y-6">
-    {{-- System Cache Stats --}}
+    @if($site)
+    {{-- Current Site Cache Overview --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-            <x-heroicon-o-cpu-chip class="w-5 h-5 mr-4 text-blue-500" />
-            System Cache Statistics
+            <x-heroicon-o-building-office class="w-5 h-5 mr-4 text-blue-500" />
+            {{ $site->name }} Cache Overview
         </h3>
-        
+
         <div class="grid grid-cols-4 gap-4">
             <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                 <div class="text-sm font-medium text-blue-600 dark:text-blue-400">Cache Driver</div>
@@ -13,29 +14,30 @@
                     {{ ucfirst($cacheStats['driver']) }}
                 </div>
             </div>
-            
+
             <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                <div class="text-sm font-medium text-green-600 dark:text-green-400">Total Keys</div>
+                <div class="text-sm font-medium text-green-600 dark:text-green-400">Site Cache Keys</div>
                 <div class="text-2xl font-bold text-green-900 dark:text-green-100">
-                    {{ number_format($cacheStats['total_keys']) }}
+                    {{ number_format(array_sum($siteCacheUsage)) }}
                 </div>
             </div>
-            
+
             <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                <div class="text-sm font-medium text-purple-600 dark:text-purple-400">Memory Usage</div>
-                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {{ $cacheStats['memory_usage'] }}
+                <div class="text-sm font-medium text-purple-600 dark:text-purple-400">Domain</div>
+                <div class="text-lg font-bold text-purple-900 dark:text-purple-100">
+                    {{ $site->domain }}
                 </div>
             </div>
-            
+
             <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-                <div class="text-sm font-medium text-orange-600 dark:text-orange-400">Hit Rate</div>
-                <div class="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                    {{ $cacheStats['hit_rate'] }}%
+                <div class="text-sm font-medium text-orange-600 dark:text-orange-400">Status</div>
+                <div class="text-lg font-bold text-orange-900 dark:text-orange-100">
+                    {{ $site->active ? 'Active' : 'Inactive' }}
                 </div>
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Site Cache Usage --}}
     @if($site && !empty($siteCacheUsage))
@@ -91,51 +93,54 @@
     </div>
     @endif
 
-    {{-- Cache Performance Tips --}}
+    {{-- Site Cache Management Tips --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <x-heroicon-o-light-bulb class="w-5 h-5 mr-2 text-yellow-500" />
-            Performance Optimization Tips
+            Site Cache Management Tips
         </h3>
-        
+
         <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
             <div class="flex items-start">
                 <x-heroicon-o-check-circle class="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                <span>Cache hit rates above 80% indicate good performance</span>
+                <span>Clear site cache when making content changes to this site</span>
             </div>
             <div class="flex items-start">
                 <x-heroicon-o-check-circle class="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                <span>Use Redis cache driver for better performance in production</span>
+                <span>Warm cache after clearing to improve page load times</span>
             </div>
             <div class="flex items-start">
                 <x-heroicon-o-check-circle class="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                <span>Warm cache after clearing to maintain optimal response times</span>
+                <span>Clear pages cache when updating page content</span>
             </div>
             <div class="flex items-start">
                 <x-heroicon-o-check-circle class="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                <span>Monitor memory usage to prevent cache overflow</span>
+                <span>Clear templates cache when modifying template structure</span>
             </div>
             <div class="flex items-start">
                 <x-heroicon-o-check-circle class="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                <span>Clear site-specific cache when making content changes</span>
+                <span>Cache is automatically cleared when you save changes</span>
             </div>
         </div>
     </div>
 
-    {{-- Cache Actions --}}
+    @if($site)
+    {{-- Site-Specific Cache Actions --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <x-heroicon-o-cog-6-tooth class="w-5 h-5 mr-2 text-gray-500" />
-            Quick Actions
+            Available Actions for {{ $site->name }}
         </h3>
-        
+
         <div class="text-sm text-gray-600 dark:text-gray-400">
-            Use the action buttons in the header to manage cache:
+            Use the action buttons in the header to manage this site's cache:
             <ul class="mt-2 space-y-1 list-disc list-inside">
-                <li>Clear specific cache types (pages, templates)</li>
-                <li>Warm site cache for better performance</li>
-                <li>Clear all cache when needed</li>
+                <li><strong>Clear Site Cache:</strong> Removes all cached data for this site</li>
+                <li><strong>Warm Site Cache:</strong> Pre-loads cache for better performance</li>
+                <li><strong>Clear Pages Cache:</strong> Removes only page-related cache</li>
+                <li><strong>Clear Templates Cache:</strong> Removes only template-related cache</li>
             </ul>
         </div>
     </div>
+    @endif
 </div>
