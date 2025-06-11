@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b3dc05be73180e1d3283ee3c7b99fd6",
+    "content-hash": "bb5cabaf40afee96eb2f4710ace0c6b4",
     "packages": [
         {
             "name": "abdelhamiderrahmouni/filament-monaco-editor",
@@ -7674,6 +7674,79 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "wiebenieuwenhuis/filament-code-editor",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sweebee/filament-code-editor.git",
+                "reference": "f2e575f32fb0a0536b6ecae86c0d6a3c8509be33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sweebee/filament-code-editor/zipball/f2e575f32fb0a0536b6ecae86c0d6a3c8509be33",
+                "reference": "f2e575f32fb0a0536b6ecae86c0d6a3c8509be33",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^11.0|^12.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^8.1",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0|^9.0",
+                "pestphp/pest": "^2.34",
+                "pestphp/pest-plugin-laravel": "^2.3",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^10.5",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Wiebenieuwenhuis\\FilamentCodeEditor\\FilamentCodeEditorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wiebenieuwenhuis\\FilamentCodeEditor\\": "src",
+                    "Wiebenieuwenhuis\\FilamentCodeEditor\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastiaan Kloos",
+                    "email": "sebastiaankloos@pm.me",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Wiebe Nieuwenhuis",
+                    "email": "info@wiebenieuwenhuis.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Code editor for Filament",
+            "homepage": "https://github.com/sweebee/filament-code-editor",
+            "keywords": [
+                "filament-code-editor",
+                "laravel"
+            ],
+            "support": {
+                "source": "https://github.com/sweebee/filament-code-editor/tree/1.2.0"
+            },
+            "time": "2025-04-14T19:32:31+00:00"
         }
     ],
     "packages-dev": [
