@@ -19,6 +19,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Sitewise Cache Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control Sitewise-specific cache behavior.
+    |
+    */
+
+    'sitewise' => [
+        'default_ttl' => env('SITEWISE_CACHE_TTL', 3600), // 1 hour
+        'stats_ttl' => env('SITEWISE_STATS_TTL', 300),    // 5 minutes
+        'blade_template_ttl' => env('SITEWISE_BLADE_TTL', 86400), // 24 hours
+        'enable_auto_warm' => env('SITEWISE_AUTO_WARM', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache Stores
     |--------------------------------------------------------------------------
     |

@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Page;
 use App\Services\BladeTemplateService;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Route;
 use League\CommonMark\CommonMarkConverter;
 
@@ -17,10 +17,8 @@ Route::get('/{slug}', function (string $slug) {
         abort(404, 'Site not found');
     }
 
-    $page = Page::where('site_id', $site->id)
-        ->where('slug', $slug)
-        ->where('active', true)
-        ->first();
+    // Use cached page lookup for better performance
+    $page = CacheService::getPage($site->id, $slug);
 
     if (!$page) {
         abort(404, 'Page not found');

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Site;
+use App\Services\CacheService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,11 +19,13 @@ class ResolveSiteMiddleware
     {
         $domain = $request->getHost();
 
-        // Find existing site or create new one
-        $site = Site::findByDomain($domain);
+        // Use cached site lookup for better performance
+        $site = CacheService::getSiteByDomain($domain);
 
         if (!$site) {
             $site = Site::createForDomain($domain);
+            // Clear the cache to ensure the new site is cached on next request
+            CacheService::clearSiteCache($site->id);
         }
 
         // Bind site to the application container

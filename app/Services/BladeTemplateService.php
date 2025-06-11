@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Page;
 use App\Models\Template;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 
@@ -19,14 +20,33 @@ class BladeTemplateService
         }
 
         $template = $page->template;
-        $templateContent = TemplateContentService::getContentForPage($page);
+
+        // Use cached template content
+        $templateContent = CacheService::getTemplateContent($page->id);
 
         // Prepare variables for the Blade template
         $variables = self::prepareTemplateVariables($page, $templateContent);
 
+        // Create a cache key that includes the template version and content hash
+        $contentHash = md5(serialize($variables) . $template->blade_template . $template->updated_at);
+        $cacheKey = CacheService::siteKey(CacheService::BLADE_TEMPLATE_PREFIX, $page->site_id, $template->id . ':' . $contentHash);
+
+        // Check for cached rendered output
+        $cachedOutput = Cache::get($cacheKey);
+        if ($cachedOutput !== null) {
+            return $cachedOutput;
+        }
+
         // Compile and render the Blade template directly from database content
-        return self::compileAndRender($template->blade_template, $variables);
+        $rendered = self::compileAndRender($template->blade_template, $variables);
+
+        // Cache the final rendered output with the content-specific key
+        Cache::put($cacheKey, $rendered, CacheService::getBladeTTL());
+
+        return $rendered;
     }
+
+
 
     /**
      * Compile and render a Blade template string with variables
@@ -239,13 +259,11 @@ class BladeTemplateService
 
     /**
      * Clear template cache for a specific template
-     * Since we're using in-memory compilation, this mainly clears any Laravel view cache
      */
     public static function clearTemplateCache(Template $template): void
     {
-        // Clear Laravel's view cache if it exists
-        $cacheKey = 'blade_template_' . $template->site_id . '_' . $template->id;
-        Cache::forget($cacheKey);
+        // Use the new CacheService for better cache management
+        CacheService::clearTemplateCache($template->site_id, $template->id);
 
         // Clear any compiled view cache that might exist
         if (function_exists('opcache_reset')) {
@@ -255,12 +273,11 @@ class BladeTemplateService
 
     /**
      * Clear all template caches
-     * Since we're using in-memory compilation, this mainly clears Laravel caches
      */
     public static function clearAllTemplateCaches(): void
     {
-        // Clear all template-related cache keys
-        Cache::flush(); // This is aggressive but ensures all template caches are cleared
+        // Use the new CacheService for better cache management
+        CacheService::clearAllCache();
 
         // Clear any compiled view cache that might exist
         if (function_exists('opcache_reset')) {

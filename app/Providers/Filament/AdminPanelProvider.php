@@ -50,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
                 \App\Filament\Pages\SiteInstallation::class,
+                \App\Filament\Pages\CacheManagement::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->middleware([
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 \App\Filament\Widgets\SiteOverview::class,
+                \App\Filament\Widgets\CachePerformanceWidget::class,
             ]);
     }
 }
