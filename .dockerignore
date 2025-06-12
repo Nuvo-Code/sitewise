@@ -1,0 +1,70 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+INSTALLATION_SCREEN.md
+docs/
+*.md
+
+# Development files
+.env.example
+.env.local
+.env.development
+.env.testing
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile.dev
+
+# Node modules and build artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# PHP development
+vendor/
+composer.lock
+phpunit.xml
+.phpunit.result.cache
+
+# Laravel specific
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+bootstrap/cache/*
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+tests/
+.phpunit.result.cache
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Build artifacts
+public/build/
+public/hot
+public/storage
+
+# Demo files
+demo-blade-templates.php
+ave();
