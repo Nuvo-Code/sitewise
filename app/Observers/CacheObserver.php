@@ -11,70 +11,49 @@ use App\Models\TemplateContent;
 class CacheObserver
 {
     /**
-     * Handle Site model events
+     * Handle the Site "updated" event.
      */
-    public function siteUpdated(Site $site): void
+    public function updated($model): void
     {
-        CacheService::clearSiteCache($site->id);
-    }
-
-    public function siteDeleted(Site $site): void
-    {
-        CacheService::clearSiteCache($site->id);
+        if ($model instanceof Site) {
+            CacheService::clearSiteCache($model->id);
+        } elseif ($model instanceof Page) {
+            $this->clearPageRelatedCache($model);
+        } elseif ($model instanceof Template) {
+            $this->clearTemplateRelatedCache($model);
+        } elseif ($model instanceof TemplateContent) {
+            $this->clearTemplateContentRelatedCache($model);
+        }
     }
 
     /**
-     * Handle Page model events
+     * Handle the model "created" event.
      */
-    public function pageCreated(Page $page): void
+    public function created($model): void
     {
-        $this->clearPageRelatedCache($page);
-    }
-
-    public function pageUpdated(Page $page): void
-    {
-        $this->clearPageRelatedCache($page);
-    }
-
-    public function pageDeleted(Page $page): void
-    {
-        $this->clearPageRelatedCache($page);
+        if ($model instanceof Page) {
+            $this->clearPageRelatedCache($model);
+        } elseif ($model instanceof Template) {
+            $this->clearTemplateRelatedCache($model);
+        } elseif ($model instanceof TemplateContent) {
+            $this->clearTemplateContentRelatedCache($model);
+        }
     }
 
     /**
-     * Handle Template model events
+     * Handle the model "deleted" event.
      */
-    public function templateCreated(Template $template): void
+    public function deleted($model): void
     {
-        $this->clearTemplateRelatedCache($template);
-    }
-
-    public function templateUpdated(Template $template): void
-    {
-        $this->clearTemplateRelatedCache($template);
-    }
-
-    public function templateDeleted(Template $template): void
-    {
-        $this->clearTemplateRelatedCache($template);
-    }
-
-    /**
-     * Handle TemplateContent model events
-     */
-    public function templateContentCreated(TemplateContent $templateContent): void
-    {
-        $this->clearTemplateContentRelatedCache($templateContent);
-    }
-
-    public function templateContentUpdated(TemplateContent $templateContent): void
-    {
-        $this->clearTemplateContentRelatedCache($templateContent);
-    }
-
-    public function templateContentDeleted(TemplateContent $templateContent): void
-    {
-        $this->clearTemplateContentRelatedCache($templateContent);
+        if ($model instanceof Site) {
+            CacheService::clearSiteCache($model->id);
+        } elseif ($model instanceof Page) {
+            $this->clearPageRelatedCache($model);
+        } elseif ($model instanceof Template) {
+            $this->clearTemplateRelatedCache($model);
+        } elseif ($model instanceof TemplateContent) {
+            $this->clearTemplateContentRelatedCache($model);
+        }
     }
 
     /**

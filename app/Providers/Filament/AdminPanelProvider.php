@@ -11,8 +11,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\MaxWidth;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -71,6 +69,26 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 \App\Filament\Widgets\SiteOverview::class,
                 \App\Filament\Widgets\CachePerformanceWidget::class,
+            ])
+            ->userMenuItems([
+                'visit-site' => MenuItem::make()
+                    ->label('Visit Site')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(function (): string {
+                        $site = app('site');
+                        if (!$site) {
+                            return '#';
+                        }
+
+                        // Determine protocol based on environment
+                        $protocol = env('APP_ENV') === 'local' ? 'http' : 'https';
+                        return "{$protocol}://{$site->domain}";
+                    })
+                    ->openUrlInNewTab()
+                    ->visible(function (): bool {
+                        $site = app('site');
+                        return $site && $site->is_setup_complete;
+                    }),
             ]);
     }
 }
