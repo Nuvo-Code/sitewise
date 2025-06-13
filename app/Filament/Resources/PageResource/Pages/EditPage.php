@@ -15,6 +15,32 @@ class EditPage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('visit')
+                ->label('Visit Page')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->color('info')
+                ->url(function (): string {
+                    $site = app('site');
+                    if (!$site) {
+                        return '#';
+                    }
+
+                    // Determine protocol based on environment
+                    $protocol = env('APP_ENV') === 'local' ? 'http' : 'https';
+                    $baseUrl = "{$protocol}://{$site->domain}";
+
+                    // Handle homepage slugs
+                    $homepageSlugs = ['home', 'homepage', 'index'];
+                    if (in_array($this->record->slug, $homepageSlugs)) {
+                        return $baseUrl;
+                    }
+
+                    return "{$baseUrl}/{$this->record->slug}";
+                })
+                ->openUrlInNewTab()
+                ->visible(function (): bool {
+                    return $this->record->active && app('site')?->is_setup_complete;
+                }),
             Actions\DeleteAction::make(),
         ];
     }

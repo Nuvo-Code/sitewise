@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AbdelhamidErrahmouni\FilamentMonacoEditor\MonacoEditor;
 use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
 use App\Models\Template;
@@ -12,8 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Exists;
 
 class PageResource extends Resource
 {
@@ -103,23 +102,20 @@ class PageResource extends Resource
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
                                 // Raw HTML Content
-                                Forms\Components\Textarea::make('html_content')
+                                MonacoEditor::make('html_content')
                                     ->label('HTML Content')
-                                    ->rows(15)
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'html')
                                     ->helperText('Enter your HTML content here'),
 
                                 // Markdown Content
-                                Forms\Components\Textarea::make('markdown')
+                                MonacoEditor::make('markdown')
                                     ->label('Markdown Content')
-                                    ->rows(15)
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'markdown')
                                     ->helperText('Write your content using Markdown syntax'),
 
                                 // JSON Content
-                                Forms\Components\Textarea::make('json_content')
+                                MonacoEditor::make('json_content')
                                     ->label('JSON Content')
-                                    ->rows(15)
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'json')
                                     ->helperText('Enter valid JSON data'),
 
@@ -226,6 +222,32 @@ class PageResource extends Resource
                     ->label('Template'),
             ])
             ->actions([
+                Tables\Actions\Action::make('visit')
+                    ->label('Visit Page')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->color('info')
+                    ->url(function (Page $record): string {
+                        $site = app('site');
+                        if (!$site) {
+                            return '#';
+                        }
+
+                        // Determine protocol based on environment
+                        $protocol = env('APP_ENV') === 'local' ? 'http' : 'https';
+                        $baseUrl = "{$protocol}://{$site->domain}";
+
+                        // Handle homepage slugs
+                        $homepageSlugs = ['home', 'homepage', 'index'];
+                        if (in_array($record->slug, $homepageSlugs)) {
+                            return $baseUrl;
+                        }
+
+                        return "{$baseUrl}/{$record->slug}";
+                    })
+                    ->openUrlInNewTab()
+                    ->visible(function (Page $record): bool {
+                        return $record->active && app('site')?->is_setup_complete;
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
