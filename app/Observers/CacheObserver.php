@@ -84,14 +84,18 @@ class CacheObserver
     {
         // Clear specific page cache
         CacheService::clearPageCache($page->site_id, $page->slug);
-        
+
         // Clear site pages cache
         CacheService::clearPageCache($page->site_id);
-        
+
+        // Clear homepage cache (since this page might be the homepage or affect homepage selection)
+        $homepageKey = CacheService::siteKey(CacheService::PAGE_PREFIX, $page->site_id, 'homepage');
+        cache()->forget($homepageKey);
+
         // Clear site stats cache
         $statsKey = CacheService::siteKey(CacheService::SITE_STATS_PREFIX, $page->site_id);
         cache()->forget($statsKey);
-        
+
         // Clear template content cache if page has template
         if ($page->template_id) {
             $contentKey = CacheService::siteKey(CacheService::TEMPLATE_CONTENT_PREFIX, 0, "page:{$page->id}");

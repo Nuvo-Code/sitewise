@@ -55,4 +55,23 @@ class Site extends Model
     {
         return !$this->is_setup_complete;
     }
+
+    /**
+     * Get the homepage for this site
+     * Looks for pages with common homepage slugs in order of preference
+     */
+    public function getHomepage(): ?Page
+    {
+        $homepageSlugs = ['home', 'homepage', 'index'];
+
+        foreach ($homepageSlugs as $slug) {
+            $page = $this->pages()->where('slug', $slug)->where('active', true)->first();
+            if ($page) {
+                return $page;
+            }
+        }
+
+        // If no specific homepage found, return the first active page
+        return $this->pages()->where('active', true)->first();
+    }
 }

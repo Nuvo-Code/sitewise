@@ -224,6 +224,90 @@ class CacheService
     }
 
     /**
+     * Get homepage for a site with caching
+     * Looks for pages with common homepage slugs in order of preference
+     */
+    public static function getHomepage(int $siteId): ?Page
+    {
+        $key = self::siteKey(self::PAGE_PREFIX, $siteId, 'homepage');
+
+        $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
+            $homepageSlugs = ['home', 'homepage', 'index'];
+
+            foreach ($homepageSlugs as $slug) {
+                $page = Page::where('site_id', $siteId)
+                          ->where('slug', $slug)
+                          ->where('active', true)
+                          ->with(['template', 'templateContents'])
+                          ->first();
+                if ($page) {
+                    return $page;
+                }
+            }
+
+            // If no specific homepage found, return the first active page
+            return Page::where('site_id', $siteId)
+                      ->where('active', true)
+                      ->with(['template', 'templateContents'])
+                      ->first();
+        });
+
+        // Handle cache serialization issues - ensure we return a proper Page model or null
+        if ($cached === null) {
+            return null;
+        }
+
+        // If cached data is an array (serialization issue), recreate the model
+        if (is_array($cached)) {
+            // Clear the corrupted cache entry
+            Cache::forget($key);
+            // Return fresh model instance using the same logic
+            $homepageSlugs = ['home', 'homepage', 'index'];
+
+            foreach ($homepageSlugs as $slug) {
+                $page = Page::where('site_id', $siteId)
+                          ->where('slug', $slug)
+                          ->where('active', true)
+                          ->with(['template', 'templateContents'])
+                          ->first();
+                if ($page) {
+                    return $page;
+                }
+            }
+
+            return Page::where('site_id', $siteId)
+                      ->where('active', true)
+                      ->with(['template', 'templateContents'])
+                      ->first();
+        }
+
+        // If it's already a Page model, return it
+        if ($cached instanceof Page) {
+            return $cached;
+        }
+
+        // If we get here, something unexpected happened - clear cache and return fresh
+        Cache::forget($key);
+        $homepageSlugs = ['home', 'homepage', 'index'];
+
+        foreach ($homepageSlugs as $slug) {
+            $page = Page::where('site_id', $siteId)
+                      ->where('slug', $slug)
+                      ->where('active', true)
+                      ->with(['template', 'templateContents'])
+                      ->first();
+            if ($page) {
+                return $page;
+            }
+        }
+
+        return Page::where('site_id', $siteId)
+                  ->where('active', true)
+                  ->with(['template', 'templateContents'])
+                  ->first();
+    }
+
+    /**
      * Get template with caching
      */
     public static function getTemplate(int $siteId, int $templateId): ?Template
@@ -336,11 +420,15 @@ class CacheService
         if ($slug) {
             $key = self::siteKey(self::PAGE_PREFIX, $siteId, $slug);
             Cache::forget($key);
+
+            // Clear homepage cache if this might affect homepage selection
+            $homepageKey = self::siteKey(self::PAGE_PREFIX, $siteId, 'homepage');
+            Cache::forget($homepageKey);
         } else {
             $pattern = self::siteKey(self::PAGE_PREFIX, $siteId) . '*';
             self::clearCacheByPattern($pattern);
         }
-        
+
         // Also clear template content cache for pages
         $pattern = self::siteKey(self::TEMPLATE_CONTENT_PREFIX, 0) . '*';
         self::clearCacheByPattern($pattern);
