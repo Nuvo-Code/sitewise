@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Tapp\FilamentTimezoneField\Forms\Components\TimezoneSelect;
 use Wiebenieuwenhuis\FilamentCodeEditor\Components\CodeEditor;
 
@@ -286,11 +287,12 @@ class SiteResource extends Resource
 
                                 Forms\Components\Placeholder::make('ai_info')
                                     ->label('')
-                                    ->content('
+                                    ->content(new HtmlString('
                                         <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
                                             <p><strong>How to get API keys:</strong></p>
                                             <ul class="list-disc list-inside space-y-1">
                                                 <li><strong>OpenAI:</strong> Visit <a href="https://platform.openai.com/api-keys" target="_blank" class="text-blue-600 hover:underline">platform.openai.com/api-keys</a></li>
+                                                <li><strong>Google Gemini:</strong> Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">makersuite.google.com/app/apikey</a></li>
                                                 <li><strong>Anthropic:</strong> Visit <a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-blue-600 hover:underline">console.anthropic.com/settings/keys</a></li>
                                             </ul>
                                             <p class="mt-3"><strong>Features:</strong></p>
@@ -301,7 +303,7 @@ class SiteResource extends Resource
                                                 <li>Optimized for web content creation</li>
                                             </ul>
                                         </div>
-                                    ')
+                                    '))
                                     ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->columnSpanFull(),
 

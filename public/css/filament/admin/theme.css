@@ -23,6 +23,13 @@
     margin-right: 0.5rem;
 }
 
+.fi-topbar {
+    padding: 1rem 2rem;
+}
+.fi-topbar nav {
+    border-radius: 0.75rem;
+}
+
 /* AI Floating Button Styles */
 .ai-floating-button-container {
     position: fixed;
