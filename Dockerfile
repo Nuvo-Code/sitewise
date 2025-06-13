@@ -41,6 +41,9 @@ RUN chown -R unit:unit /var/www/html \
 # Copy Unit configuration
 COPY unit.json /docker-entrypoint.d/unit.json
 
+# Run migrations
+RUN php artisan migrate --force
+
 # Update port to match docker-compose
 EXPOSE 80
 
