@@ -11,6 +11,10 @@ class SiteOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    protected ?string $heading = 'Site Overview';
+
+    protected static bool $isLazy = true;
+
     protected function getStats(): array
     {
         $site = app('site');

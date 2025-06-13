@@ -10,7 +10,9 @@ class CachePerformanceWidget extends BaseWidget
 {
     protected static ?int $sort = 2;
 
-    protected static bool $isLazy = false;
+    protected ?string $heading = 'Cache Performance';
+
+    protected static bool $isLazy = true;
 
     protected function getStats(): array
     {

@@ -33,7 +33,6 @@
             <x-slot name="heading">
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center gap-2">
-                        <x-heroicon-o-document-text class="w-5 h-5 text-success-500" />
                         Generated Content
                     </div>
                     <div class="text-sm text-gray-500">
@@ -45,7 +44,7 @@
             <div class="space-y-4">
                 <!-- Content Preview Tabs -->
                 <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-gray-700">
-                    <div class="flex bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                    <div class="flex bg-gray-50 border-b border-gray-200 dark:border-gray-700">
                         <button
                             onclick="showTab('preview')"
                             id="preview-tab-btn"
@@ -78,7 +77,6 @@
                     <x-filament::button
                         wire:click="copyContent"
                         color="primary">
-                        <x-heroicon-o-clipboard class="w-4 h-4" />
                         Copy HTML
                     </x-filament::button>
 
