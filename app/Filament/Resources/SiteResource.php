@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\Language;
 use App\Filament\Resources\SiteResource\Pages;
 use App\Models\Site;
+use App\Services\AiContentService;
 use Filament\Forms;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Form;
@@ -239,6 +240,108 @@ class SiteResource extends Resource
                                 CodeEditor::make('settings.custom_js')
                                     ->label('Custom JavaScript')
                                     ->helperText('Custom JavaScript code to include on your site'),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\Tabs\Tab::make('AI Configuration')
+                            ->icon('heroicon-o-bolt')
+                            ->schema([
+                                Forms\Components\Toggle::make('ai_configuration.enabled')
+                                    ->label('Enable AI Content Generation')
+                                    ->helperText('Enable the AI floating button for content generation')
+                                    ->live()
+                                    ->inline(false),
+
+                                Forms\Components\Select::make('ai_configuration.provider')
+                                    ->label('AI Provider')
+                                    ->options([
+                                        'openai' => 'OpenAI',
+                                        'anthropic' => 'Anthropic',
+                                    ])
+                                    ->default('openai')
+                                    ->live()
+                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->helperText('Choose your preferred AI provider'),
+
+                                Forms\Components\TextInput::make('ai_configuration.api_key')
+                                    ->label('API Key')
+                                    ->password()
+                                    ->revealable()
+                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->helperText('Your API key for the selected provider (stored securely)')
+                                    ->placeholder('Enter your API key...'),
+
+                                Forms\Components\Select::make('ai_configuration.model')
+                                    ->label('AI Model')
+                                    ->options(function (Forms\Get $get) {
+                                        $provider = $get('ai_configuration.provider') ?? 'openai';
+                                        $aiService = app(AiContentService::class);
+                                        return $aiService->getAvailableModels($provider);
+                                    })
+                                    ->default('gpt-4o-mini')
+                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->live()
+                                    ->helperText('Select the AI model to use for content generation'),
+
+                                Forms\Components\Placeholder::make('ai_info')
+                                    ->label('')
+                                    ->content('
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                                            <p><strong>How to get API keys:</strong></p>
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li><strong>OpenAI:</strong> Visit <a href="https://platform.openai.com/api-keys" target="_blank" class="text-blue-600 hover:underline">platform.openai.com/api-keys</a></li>
+                                                <li><strong>Anthropic:</strong> Visit <a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-blue-600 hover:underline">console.anthropic.com/settings/keys</a></li>
+                                            </ul>
+                                            <p class="mt-3"><strong>Features:</strong></p>
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li>Generate HTML content with AI assistance</li>
+                                                <li>Preview generated content before using</li>
+                                                <li>Copy HTML code to clipboard</li>
+                                                <li>Optimized for web content creation</li>
+                                            </ul>
+                                        </div>
+                                    ')
+                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->columnSpanFull(),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('test_configuration')
+                                        ->label('Test Configuration')
+                                        ->icon('heroicon-o-play')
+                                        ->color('success')
+                                        ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled') && $get('ai_configuration.api_key'))
+                                        ->action(function (Forms\Get $get, Forms\Set $set) {
+                                            $site = app('site');
+                                            if (!$site) return;
+
+                                            // Temporarily update the site with current form values
+                                            $site->ai_configuration = [
+                                                'enabled' => $get('ai_configuration.enabled'),
+                                                'provider' => $get('ai_configuration.provider'),
+                                                'api_key' => $get('ai_configuration.api_key'),
+                                                'model' => $get('ai_configuration.model'),
+                                            ];
+
+                                            $aiService = app(AiContentService::class);
+                                            $result = $aiService->testConfiguration($site);
+
+                                            if ($result['success']) {
+                                                \Filament\Notifications\Notification::make()
+                                                    ->title('Configuration Test Successful')
+                                                    ->body('AI configuration is working correctly!')
+                                                    ->success()
+                                                    ->send();
+                                            } else {
+                                                \Filament\Notifications\Notification::make()
+                                                    ->title('Configuration Test Failed')
+                                                    ->body($result['error'])
+                                                    ->danger()
+                                                    ->send();
+                                            }
+                                        }),
+                                ])
+                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2),
                     ])

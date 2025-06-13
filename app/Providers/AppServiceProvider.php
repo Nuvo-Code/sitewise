@@ -43,5 +43,18 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::HEAD_END,
             fn(): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
         );
+
+        // Register AI Floating Button
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::BODY_END,
+            function (): string {
+                $site = app('site');
+                if (!$site || !$site->isAiEnabled()) {
+                    return '';
+                }
+
+                return view('components.ai-floating-button-hook')->render();
+            }
+        );
     }
 }

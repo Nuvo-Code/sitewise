@@ -49,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
                 \App\Filament\Pages\SiteInstallation::class,
                 \App\Filament\Pages\CacheManagement::class,
+                \App\Filament\Pages\AiContentGeneration::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->middleware([
@@ -88,6 +89,14 @@ class AdminPanelProvider extends PanelProvider
                     ->visible(function (): bool {
                         $site = app('site');
                         return $site && $site->is_setup_complete;
+                    }),
+                'ai-content' => MenuItem::make()
+                    ->label('Generate AI Content')
+                    ->icon('heroicon-o-sparkles')
+                    ->url(fn (): string => \App\Filament\Pages\AiContentGeneration::getUrl())
+                    ->visible(function (): bool {
+                        $site = app('site');
+                        return $site && $site->isAiEnabled();
                     }),
             ]);
     }

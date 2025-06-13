@@ -11,12 +11,14 @@ class Site extends Model
         'domain',
         'name',
         'settings',
+        'ai_configuration',
         'active',
         'is_setup_complete',
     ];
 
     protected $casts = [
         'settings' => 'array',
+        'ai_configuration' => 'array',
         'active' => 'boolean',
         'is_setup_complete' => 'boolean',
     ];
@@ -73,5 +75,40 @@ class Site extends Model
 
         // If no specific homepage found, return the first active page
         return $this->pages()->where('active', true)->first();
+    }
+
+    /**
+     * Get AI configuration for this site
+     */
+    public function getAiConfiguration(): array
+    {
+        return $this->ai_configuration ?? [];
+    }
+
+    /**
+     * Check if AI is enabled for this site
+     */
+    public function isAiEnabled(): bool
+    {
+        $config = $this->getAiConfiguration();
+        return !empty($config['enabled']) && !empty($config['api_key']);
+    }
+
+    /**
+     * Get the preferred AI model for this site
+     */
+    public function getAiModel(): string
+    {
+        $config = $this->getAiConfiguration();
+        return $config['model'] ?? 'gpt-4o-mini';
+    }
+
+    /**
+     * Get the AI provider for this site
+     */
+    public function getAiProvider(): string
+    {
+        $config = $this->getAiConfiguration();
+        return $config['provider'] ?? 'openai';
     }
 }
