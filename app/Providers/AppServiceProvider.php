@@ -9,6 +9,7 @@ use App\Models\TemplateContent;
 use App\Observers\CacheObserver;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,8 +25,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(UrlGenerator $url): void
     {
+        if (env('APP_ENV') !== 'local') {
+            $url->forceSchema('https');
+        }
+
         // Register cache observers for automatic cache invalidation
         $cacheObserver = new CacheObserver();
 
@@ -36,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
-            fn (): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
+            fn(): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
         );
     }
 }
