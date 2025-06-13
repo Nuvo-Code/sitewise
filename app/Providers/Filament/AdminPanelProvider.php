@@ -111,6 +111,7 @@ class AdminPanelProvider extends PanelProvider
             ->breadcrumbs(false)
             ->spa()
             ->login()
+            ->profile(isSimple: true)
             ->authGuard('web')
             // ->maxContentWidth(MaxWidth::Full)
             // ->unsavedChangesAlerts()
