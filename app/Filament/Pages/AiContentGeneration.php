@@ -15,7 +15,12 @@ class AiContentGeneration extends Page
     
     protected static string $view = 'filament.pages.ai-content-generation';
     
-    protected static ?string $title = 'AI Content Generation';
+    protected static ?string $title = null;
+
+    public function getTitle(): string
+    {
+        return __('filament.pages.ai_content_generation.title');
+    }
     
     protected static bool $shouldRegisterNavigation = false;
     
@@ -56,16 +61,16 @@ class AiContentGeneration extends Page
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Generate AI Content')
+                Forms\Components\Section::make(__('filament.ai.generate_content.heading'))
                     ->schema([
                         Forms\Components\Textarea::make('prompt')
-                            ->label('Content Description')
+                            ->label(__('filament.ai.generate_content.content_description'))
                             ->hiddenLabel()
-                            ->placeholder('Example: Create a hero section for a tech startup with a call-to-action button, modern design with blue gradient background...')
+                            ->placeholder(__('filament.ai.generate_content.placeholder'))
                             ->required()
                             ->rows(4)
                             ->maxLength(2000)
-                            ->helperText('Describe the content you want to generate in detail. Be specific about styling, layout, and functionality.')
+                            ->helperText(__('filament.ai.generate_content.helper'))
                             ->disabled($this->isGenerating),
                     ])
                     ->columns(1),

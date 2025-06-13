@@ -22,6 +22,21 @@ class TemplateResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.template.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.template.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.template.plural_model_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

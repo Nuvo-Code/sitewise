@@ -11,7 +11,12 @@ class SiteOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
 
-    protected ?string $heading = 'Site Overview';
+    protected ?string $heading = null;
+
+    public function getHeading(): string
+    {
+        return __('filament.widgets.site_overview.heading');
+    }
 
     protected static bool $isLazy = true;
 
@@ -34,22 +39,22 @@ class SiteOverview extends BaseWidget
             ->toArray();
 
         return [
-            Stat::make('Current Site', $site->name)
+            Stat::make(__('filament.widgets.site_overview.current_site'), $site->name)
                 ->description($site->domain)
                 ->descriptionIcon('heroicon-m-globe-alt')
                 ->color('primary'),
 
-            Stat::make('Total Pages', $totalPages)
-                ->description($activePages . ' active')
+            Stat::make(__('filament.widgets.site_overview.total_pages'), $totalPages)
+                ->description($activePages . ' ' . __('filament.widgets.site_overview.active_pages'))
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('success'),
 
-            Stat::make('Templates', $totalTemplates)
-                ->description('Reusable layouts')
+            Stat::make(__('filament.widgets.site_overview.templates'), $totalTemplates)
+                ->description(__('filament.widgets.site_overview.reusable_layouts'))
                 ->descriptionIcon('heroicon-m-squares-2x2')
                 ->color('warning'),
 
-            Stat::make('Page Types', 'HTML: ' . ($pagesByType['html'] ?? 0))
+            Stat::make(__('filament.widgets.site_overview.page_types'), 'HTML: ' . ($pagesByType['html'] ?? 0))
                 ->description('MD: ' . ($pagesByType['markdown'] ?? 0) . ' | JSON: ' . ($pagesByType['json'] ?? 0))
                 ->descriptionIcon('heroicon-m-code-bracket')
                 ->color('info'),

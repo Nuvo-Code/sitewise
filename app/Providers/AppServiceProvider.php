@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\Template;
 use App\Models\TemplateContent;
 use App\Observers\CacheObserver;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Routing\UrlGenerator;
@@ -43,6 +44,11 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::HEAD_END,
             fn(): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
         );
+
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['en', 'tr']);
+        });
 
         // Register AI Floating Button
         // FilamentView::registerRenderHook(

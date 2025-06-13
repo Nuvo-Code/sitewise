@@ -307,17 +307,16 @@ class SiteInstallation extends Page
     
     public function getTitle(): string
     {
-        return 'Complete Site Setup';
+        return __('filament.pages.site_installation.title');
     }
-    
+
     public function getHeading(): string
     {
-        return 'Welcome to Sitewise!';
+        return __('filament.pages.site_installation.heading');
     }
-    
+
     public function getSubheading(): string
     {
-        $site = app('site');
-        return "Let's set up your site for domain: {$site->domain}";
+        return __('filament.pages.site_installation.subheading');
     }
 }

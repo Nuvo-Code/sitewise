@@ -22,6 +22,21 @@ class PageResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.page.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.page.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.page.plural_model_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -29,13 +44,13 @@ class PageResource extends Resource
                 Forms\Components\Hidden::make('site_id')
                     ->default(fn () => app('site')?->id),
 
-                Forms\Components\Tabs::make('Page Settings')
+                Forms\Components\Tabs::make(__('filament.resources.page.tabs.page_settings'))
                     ->tabs([
-                        Forms\Components\Tabs\Tab::make('Basic Info')
+                        Forms\Components\Tabs\Tab::make(__('filament.resources.page.tabs.basic_info'))
                             ->icon('heroicon-o-document-text')
                             ->schema([
                                 Forms\Components\TextInput::make('slug')
-                                    ->label('URL Slug')
+                                    ->label(__('filament.resources.page.fields.slug.label'))
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(
@@ -45,22 +60,22 @@ class PageResource extends Resource
                                         modifyRuleUsing: fn ($rule) => $rule->where('site_id', app('site')?->id)
                                     )
                                     ->rules(['regex:/^[a-z0-9\-]+$/'])
-                                    ->helperText('Only lowercase letters, numbers, and hyphens allowed')
+                                    ->helperText(__('filament.resources.page.fields.slug.helper'))
                                     ->prefixIcon('heroicon-o-link'),
 
                                 Forms\Components\TextInput::make('title')
-                                    ->label('Page Title')
+                                    ->label(__('filament.resources.page.fields.title.label'))
                                     ->required()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-o-document-text'),
 
                                 Forms\Components\Select::make('response_type')
-                                    ->label('Content Type')
+                                    ->label(__('filament.resources.page.fields.response_type.label'))
                                     ->options([
-                                        'html' => 'HTML',
-                                        'markdown' => 'Markdown',
-                                        'json' => 'JSON',
-                                        'template' => 'Template (Blade)',
+                                        'html' => __('filament.resources.page.fields.response_type.options.html'),
+                                        'markdown' => __('filament.resources.page.fields.response_type.options.markdown'),
+                                        'json' => __('filament.resources.page.fields.response_type.options.json'),
+                                        'template' => __('filament.resources.page.fields.response_type.options.template'),
                                     ])
                                     ->required()
                                     ->default('html')
@@ -71,10 +86,11 @@ class PageResource extends Resource
                                             $set('template_id', null);
                                         }
                                     })
+                                    ->helperText(__('filament.resources.page.fields.response_type.helper'))
                                     ->prefixIcon('heroicon-o-code-bracket'),
 
                                 Forms\Components\Select::make('template_id')
-                                    ->label('Template')
+                                    ->label(__('filament.resources.page.fields.template_id.label'))
                                     ->relationship('template', 'name')
                                     ->options(fn () => Template::where('site_id', app('site')?->id)->pluck('name', 'id'))
                                     ->searchable()
@@ -87,37 +103,37 @@ class PageResource extends Resource
                                         }
                                     })
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'template')
-                                    ->helperText('Select a template to use structured content with Blade rendering.')
+                                    ->helperText(__('filament.resources.page.fields.template_id.helper'))
                                     ->prefixIcon('heroicon-o-document-duplicate'),
 
                                 Forms\Components\Toggle::make('active')
-                                    ->label('Active')
+                                    ->label(__('filament.resources.page.fields.active.label'))
                                     ->default(true)
-                                    ->helperText('Enable to make this page visible on your site')
+                                    ->helperText(__('filament.resources.page.fields.active.helper'))
                                     ->inline(false),
                             ])
                             ->columns(2),
 
-                        Forms\Components\Tabs\Tab::make('Content')
+                        Forms\Components\Tabs\Tab::make(__('filament.resources.page.tabs.content'))
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
                                 // Raw HTML Content
                                 MonacoEditor::make('html_content')
-                                    ->label('HTML Content')
+                                    ->label(__('filament.resources.page.fields.content.label'))
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'html')
-                                    ->helperText('Enter your HTML content here'),
+                                    ->helperText(__('filament.resources.page.fields.content.helper')),
 
                                 // Markdown Content
                                 MonacoEditor::make('markdown')
-                                    ->label('Markdown Content')
+                                    ->label(__('filament.resources.page.fields.content.label'))
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'markdown')
-                                    ->helperText('Write your content using Markdown syntax'),
+                                    ->helperText(__('filament.resources.page.fields.content.helper')),
 
                                 // JSON Content
                                 MonacoEditor::make('json_content')
-                                    ->label('JSON Content')
+                                    ->label(__('filament.resources.page.fields.content.label'))
                                     ->visible(fn (Forms\Get $get) => $get('response_type') === 'json')
-                                    ->helperText('Enter valid JSON data'),
+                                    ->helperText(__('filament.resources.page.fields.content.helper')),
 
                                 // Info when template is used
                                 Forms\Components\Placeholder::make('content_info')
@@ -175,17 +191,17 @@ class PageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('filament.resources.page.table.columns.slug'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label(__('filament.resources.page.table.columns.title'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('response_type')
-                    ->label('Type')
+                    ->label(__('filament.resources.page.table.columns.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'html' => 'primary',
@@ -196,15 +212,15 @@ class PageResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('template.name')
-                    ->label('Template')
+                    ->label(__('filament.resources.page.table.columns.template'))
                     ->default('—'),
 
                 Tables\Columns\IconColumn::make('active')
-                    ->label('Active')
+                    ->label(__('filament.resources.page.table.columns.active'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Last Updated')
+                    ->label(__('filament.resources.page.table.columns.last_updated'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -223,7 +239,7 @@ class PageResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('visit')
-                    ->label('Visit Page')
+                    ->label(__('filament.resources.page.actions.visit_page'))
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('info')
                     ->url(function (Page $record): string {
