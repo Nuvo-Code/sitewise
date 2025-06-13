@@ -3,13 +3,15 @@
 namespace App\Filament\Pages;
 
 use App\Enums\Language;
-use App\Models\Site;
+use App\Services\CacheService;
 use Filament\Forms;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Exceptions\Halt;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Tapp\FilamentTimezoneField\Forms\Components\TimezoneSelect;
 
 class SiteInstallation extends Page
@@ -225,8 +227,41 @@ class SiteInstallation extends Page
     public function save(): void
     {
         try {
+            // Delete Cache
+            CacheService::clearSiteCache(app('site')->id);
+
+            // Log the start of the save process
+            Log::info('SiteInstallation: Starting save process', [
+                'domain' => request()->getHost(),
+                'user_id' => Auth::id(),
+            ]);
+
             $data = $this->form->getState();
             $site = app('site');
+
+            if (!$site) {
+                Log::error('SiteInstallation: No site found in app container');
+                Notification::make()
+                    ->title('Error: Site not found')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
+            Log::info('SiteInstallation: Form data retrieved', [
+                'site_id' => $site->id,
+                'data_keys' => array_keys($data),
+            ]);
+
+            // Validate required fields
+            if (empty($data['name'])) {
+                Log::error('SiteInstallation: Site name is required');
+                Notification::make()
+                    ->title('Error: Site name is required')
+                    ->danger()
+                    ->send();
+                return;
+            }
 
             $site->update([
                 'name' => $data['name'],
@@ -234,7 +269,16 @@ class SiteInstallation extends Page
                 'settings' => $data['settings'] ?? [],
             ]);
 
+            Log::info('SiteInstallation: Site updated successfully', [
+                'site_id' => $site->id,
+                'name' => $data['name'],
+            ]);
+
             $site->markSetupComplete();
+
+            Log::info('SiteInstallation: Site marked as setup complete', [
+                'site_id' => $site->id,
+            ]);
 
             Notification::make()
                 ->title('Site setup completed successfully!')
@@ -244,7 +288,20 @@ class SiteInstallation extends Page
             redirect()->to('/admin');
 
         } catch (Halt) {
+            Log::info('SiteInstallation: Form validation halt occurred');
             return;
+        } catch (\Exception $e) {
+            Log::error('SiteInstallation: Unexpected error during save', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'site_id' => app('site')?->id,
+            ]);
+
+            Notification::make()
+                ->title('Error saving site setup')
+                ->body('Please check the logs for more details: ' . $e->getMessage())
+                ->danger()
+                ->send();
         }
     }
     
