@@ -26,7 +26,6 @@ yarn-error.log*
 
 # PHP development
 vendor/
-composer.lock
 phpunit.xml
 .phpunit.result.cache
 
