@@ -57,10 +57,10 @@ class AiContentGeneration extends Page
         return $form
             ->schema([
                 Forms\Components\Section::make('Generate AI Content')
-                    ->description('Describe the content you want to generate and our AI will create HTML content for you.')
                     ->schema([
                         Forms\Components\Textarea::make('prompt')
                             ->label('Content Description')
+                            ->hiddenLabel()
                             ->placeholder('Example: Create a hero section for a tech startup with a call-to-action button, modern design with blue gradient background...')
                             ->required()
                             ->rows(4)

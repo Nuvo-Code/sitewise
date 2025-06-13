@@ -256,6 +256,7 @@ class SiteResource extends Resource
                                     ->label('AI Provider')
                                     ->options([
                                         'openai' => 'OpenAI',
+                                        'gemini' => 'Google Gemini',
                                         'anthropic' => 'Anthropic',
                                     ])
                                     ->default('openai')

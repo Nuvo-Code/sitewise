@@ -13,6 +13,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "league/commonmark": "^2.7",
+        "prism-php/prism": "^0.71.1",
         "tapp/filament-timezone-field": "^3.0",
         "wiebenieuwenhuis/filament-code-editor": "^1.2"
     },

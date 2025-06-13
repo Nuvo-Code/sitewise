@@ -45,16 +45,16 @@ class AppServiceProvider extends ServiceProvider
         );
 
         // Register AI Floating Button
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::BODY_END,
-            function (): string {
-                $site = app('site');
-                if (!$site || !$site->isAiEnabled()) {
-                    return '';
-                }
+        // FilamentView::registerRenderHook(
+        //     PanelsRenderHook::BODY_END,
+        //     function (): string {
+        //         $site = app('site');
+        //         if (!$site || !$site->isAiEnabled()) {
+        //             return '';
+        //         }
 
-                return view('components.ai-floating-button-hook')->render();
-            }
-        );
+        //         return view('components.ai-floating-button-hook')->render();
+        //     }
+        // );
     }
 }

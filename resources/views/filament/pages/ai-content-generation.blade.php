@@ -1,125 +1,100 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        <!-- Form Section -->
-        <x-filament::section>
-            <x-slot name="heading">
-                <div class="flex items-center gap-2">
-                    <x-heroicon-o-sparkles class="w-5 h-5 text-primary-500" />
-                    Generate AI Content
-                </div>
-            </x-slot>
-            
-            <x-slot name="description">
-                Describe the content you want to generate and our AI will create HTML content for you.
-            </x-slot>
+        <form wire:submit="generateContent" class="space-y-4">
+            {{ $this->form }}
 
-            <form wire:submit="generateContent" class="space-y-4">
-                {{ $this->form }}
-                
-                <div class="flex gap-3">
-                    <x-filament::button 
-                        type="submit" 
-                        :disabled="!$this->canGenerate"
-                        color="primary"
-                        size="lg"
-                    >
-                        @if($isGenerating)
-                            <x-filament::loading-indicator class="h-4 w-4" />
-                            Generating...
-                        @else
-                            <x-heroicon-o-sparkles class="w-4 h-4" />
-                            Generate Content
-                        @endif
-                    </x-filament::button>
-                    
-                    @if($showResult)
-                        <x-filament::button 
-                            wire:click="resetForm"
-                            color="gray"
-                            size="lg"
-                        >
-                            <x-heroicon-o-arrow-path class="w-4 h-4" />
-                            New Generation
-                        </x-filament::button>
+            <div class="flex gap-3">
+                <x-filament::button
+                    type="submit"
+                    :disabled="!$this->canGenerate"
+                    color="primary"
+                    size="lg">
+                    @if($isGenerating)
+                    Generating...
+                    @else
+                    Generate Content
                     @endif
-                </div>
-            </form>
-        </x-filament::section>
+                </x-filament::button>
+
+                @if($showResult)
+                <x-filament::button
+                    wire:click="resetForm"
+                    color="gray"
+                    size="lg">
+                    New Generation
+                </x-filament::button>
+                @endif
+            </div>
+        </form>
 
         <!-- Results Section -->
         @if($showResult)
-            <x-filament::section>
-                <x-slot name="heading">
-                    <div class="flex items-center justify-between w-full">
-                        <div class="flex items-center gap-2">
-                            <x-heroicon-o-document-text class="w-5 h-5 text-success-500" />
-                            Generated Content
-                        </div>
-                        <div class="text-sm text-gray-500">
-                            {{ ucfirst($provider) }} - {{ $model }}
-                        </div>
+        <x-filament::section>
+            <x-slot name="heading">
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-2">
+                        <x-heroicon-o-document-text class="w-5 h-5 text-success-500" />
+                        Generated Content
                     </div>
-                </x-slot>
-
-                <div class="space-y-4">
-                    <!-- Content Preview Tabs -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-gray-700">
-                        <div class="flex bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                            <button 
-                                onclick="showTab('preview')" 
-                                id="preview-tab-btn"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-r border-gray-200 hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 tab-button active"
-                            >
-                                Preview
-                            </button>
-                            <button 
-                                onclick="showTab('code')" 
-                                id="code-tab-btn"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-600 tab-button"
-                            >
-                                HTML Code
-                            </button>
-                        </div>
-
-                        <!-- Preview Tab -->
-                        <div id="preview-tab" class="p-4 tab-content active">
-                            <div class="prose max-w-none dark:prose-invert">
-                                {!! $generatedContent !!}
-                            </div>
-                        </div>
-
-                        <!-- Code Tab -->
-                        <div id="code-tab" class="p-4 tab-content hidden">
-                            <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ $generatedContent }}</code></pre>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex gap-3">
-                        <x-filament::button 
-                            wire:click="copyContent"
-                            color="primary"
-                        >
-                            <x-heroicon-o-clipboard class="w-4 h-4" />
-                            Copy HTML
-                        </x-filament::button>
-                        
-                        <x-filament::button 
-                            wire:click="regenerateContent"
-                            color="gray"
-                            :disabled="!$this->canGenerate"
-                        >
-                            @if($isGenerating)
-                                <x-filament::loading-indicator class="h-4 w-4" />
-                                Regenerating...
-                            @else
-                                <x-heroicon-o-arrow-path class="w-4 h-4" />
-                                Regenerate
-                            @endif
-                        </x-filament::button>
+                    <div class="text-sm text-gray-500">
+                        {{ ucfirst($provider) }} - {{ $model }}
                     </div>
                 </div>
-            </x-filament::section>
+            </x-slot>
+
+            <div class="space-y-4">
+                <!-- Content Preview Tabs -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-gray-700">
+                    <div class="flex bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                        <button
+                            onclick="showTab('preview')"
+                            id="preview-tab-btn"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-r border-gray-200 hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 tab-button active">
+                            Preview
+                        </button>
+                        <button
+                            onclick="showTab('code')"
+                            id="code-tab-btn"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-600 tab-button">
+                            HTML Code
+                        </button>
+                    </div>
+
+                    <!-- Preview Tab -->
+                    <div id="preview-tab" class="p-4 tab-content active">
+                        <div class="prose max-w-none dark:prose-invert">
+                            {!! $generatedContent !!}
+                        </div>
+                    </div>
+
+                    <!-- Code Tab -->
+                    <div id="code-tab" class="p-4 tab-content hidden">
+                        <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ $generatedContent }}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <x-filament::button
+                        wire:click="copyContent"
+                        color="primary">
+                        <x-heroicon-o-clipboard class="w-4 h-4" />
+                        Copy HTML
+                    </x-filament::button>
+
+                    <x-filament::button
+                        wire:click="regenerateContent"
+                        color="gray"
+                        :disabled="!$this->canGenerate">
+                        @if($isGenerating)
+                        Regenerating...
+                        @else
+                        Regenerate
+                        @endif
+                    </x-filament::button>
+                </div>
+            </div>
+        </x-filament::section>
         @endif
     </div>
 

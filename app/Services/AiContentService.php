@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Models\Site;
-use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use Illuminate\Support\Facades\Log;
+use Prism\Prism\Prism;
+use Prism\Prism\Enums\Provider;
 
 class AiContentService
 {
@@ -38,9 +39,9 @@ class AiContentService
 
             // Generate content using Prism
             $response = Prism::text()
-                ->using($provider, $site->getAiModel())
+                ->using(Provider::Gemini, $site->getAiModel())
                 ->withPrompt($enhancedPrompt)
-                ->generate();
+                ->asText();
 
             $content = $response->text;
 
@@ -81,8 +82,16 @@ class AiContentService
             return null;
         }
 
+        // set config for session
+        config([
+            'prism.providers.openai.api_key' => $apiKey,
+            'prism.providers.gemini.api_key' => $apiKey,
+            'prism.providers.anthropic.api_key' => $apiKey,
+        ]);
+
         return match ($provider) {
             'openai' => OpenAI::text()->withApiKey($apiKey),
+            'gemini' => Prism::text()->using(Provider::Gemini, $site->getAiModel()),
             'anthropic' => Anthropic::text()->withApiKey($apiKey),
             default => null,
         };
@@ -142,6 +151,10 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
                 'gpt-4-turbo' => 'GPT-4 Turbo',
                 'gpt-3.5-turbo' => 'GPT-3.5 Turbo',
             ],
+            'gemini' => [
+                'gemini-2.5-pro-preview-06-05' => 'Gemini 2.5 Pro (Preview)',
+                'gemini-2.0-flash' => 'Gemini 2.0 Flash (Fast & Cost-effective)',
+            ],
             'anthropic' => [
                 'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (Latest)',
                 'claude-3-opus-20240229' => 'Claude 3 Opus',
@@ -159,6 +172,7 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
     {
         return [
             'openai' => 'OpenAI',
+            'gemini' => 'Google Gemini',
             'anthropic' => 'Anthropic',
         ];
     }
@@ -180,9 +194,9 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
 
             // Test with a simple prompt
             $response = Prism::text()
-                ->using($provider, $site->getAiModel())
+                ->using(Provider::Gemini, $site->getAiModel())
                 ->withPrompt('Say "Hello, Sitewise!" in HTML format.')
-                ->generate();
+                ->asText();
 
             return [
                 'success' => true,
