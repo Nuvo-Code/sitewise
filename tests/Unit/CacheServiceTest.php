@@ -29,13 +29,13 @@ test('cache service can get configuration values', function () {
 
 test('cache service can get cache statistics', function () {
     $stats = CacheService::getCacheStats();
-    
+
     expect($stats)->toBeArray();
     expect($stats)->toHaveKey('driver');
     expect($stats)->toHaveKey('total_keys');
     expect($stats)->toHaveKey('memory_usage');
     expect($stats)->toHaveKey('hit_rate');
-    
+
     expect($stats['driver'])->toBeString();
     expect($stats['total_keys'])->toBeInt();
     expect($stats['hit_rate'])->toBeNumeric();

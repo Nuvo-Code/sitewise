@@ -8,7 +8,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-
 class TemplateContentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'templateContents';
@@ -25,10 +24,12 @@ class TemplateContentsRelationManager extends RelationManager
                         $page = $this->getOwnerRecord();
                         if ($page->template) {
                             $fields = $page->template->getFieldsForFormAttribute();
+
                             return collect($fields)
-                                ->mapWithKeys(fn ($field) => [$field['key'] => $field['name'] . " ({$field['type']})"])
+                                ->mapWithKeys(fn ($field) => [$field['key'] => $field['name']." ({$field['type']})"])
                                 ->toArray();
                         }
+
                         return [];
                     })
                     ->required()
@@ -69,6 +70,7 @@ class TemplateContentsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data) {
                         $data['template_id'] = $this->getOwnerRecord()->template_id;
+
                         return $data;
                     }),
             ])
@@ -88,6 +90,6 @@ class TemplateContentsRelationManager extends RelationManager
 
     public function isReadOnly(): bool
     {
-        return !$this->getOwnerRecord()->template_id;
+        return ! $this->getOwnerRecord()->template_id;
     }
 }

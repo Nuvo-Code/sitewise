@@ -17,21 +17,22 @@ use Tapp\FilamentTimezoneField\Forms\Components\TimezoneSelect;
 class SiteInstallation extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    
+
     protected static string $view = 'filament.pages.site-installation';
-    
+
     protected static ?string $title = 'Complete Site Setup';
-    
+
     protected static bool $shouldRegisterNavigation = false;
-    
+
     public ?array $data = [];
-    
+
     public function mount(): void
     {
         $site = app('site');
 
-        if (!$site || !$site->needsSetup()) {
+        if (! $site || ! $site->needsSetup()) {
             redirect()->to('/admin');
+
             return;
         }
 
@@ -42,7 +43,7 @@ class SiteInstallation extends Page
             'settings' => $site->settings ?? [],
         ]);
     }
-    
+
     public function form(Form $form): Form
     {
         return $form
@@ -223,7 +224,7 @@ class SiteInstallation extends Page
             ])
             ->statePath('data');
     }
-    
+
     public function save(): void
     {
         try {
@@ -239,12 +240,13 @@ class SiteInstallation extends Page
             $data = $this->form->getState();
             $site = app('site');
 
-            if (!$site) {
+            if (! $site) {
                 Log::error('SiteInstallation: No site found in app container');
                 Notification::make()
                     ->title('Error: Site not found')
                     ->danger()
                     ->send();
+
                 return;
             }
 
@@ -260,6 +262,7 @@ class SiteInstallation extends Page
                     ->title('Error: Site name is required')
                     ->danger()
                     ->send();
+
                 return;
             }
 
@@ -289,6 +292,7 @@ class SiteInstallation extends Page
 
         } catch (Halt) {
             Log::info('SiteInstallation: Form validation halt occurred');
+
             return;
         } catch (\Exception $e) {
             Log::error('SiteInstallation: Unexpected error during save', [
@@ -299,12 +303,12 @@ class SiteInstallation extends Page
 
             Notification::make()
                 ->title('Error saving site setup')
-                ->body('Please check the logs for more details: ' . $e->getMessage())
+                ->body('Please check the logs for more details: '.$e->getMessage())
                 ->danger()
                 ->send();
         }
     }
-    
+
     public function getTitle(): string
     {
         return __('filament.pages.site_installation.title');

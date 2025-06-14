@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -10,7 +9,6 @@ use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -150,17 +148,19 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(function (): string {
                         $site = app('site');
-                        if (!$site) {
+                        if (! $site) {
                             return '#';
                         }
 
                         // Determine protocol based on environment
                         $protocol = env('APP_ENV') === 'local' ? 'http' : 'https';
+
                         return "{$protocol}://{$site->domain}";
                     })
                     ->openUrlInNewTab()
                     ->visible(function (): bool {
                         $site = app('site');
+
                         return $site && $site->is_setup_complete;
                     }),
                 'ai-content' => MenuItem::make()
@@ -169,6 +169,7 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn (): string => \App\Filament\Pages\AiContentGeneration::getUrl())
                     ->visible(function (): bool {
                         $site = app('site');
+
                         return $site && $site->isAiEnabled();
                     }),
             ]);

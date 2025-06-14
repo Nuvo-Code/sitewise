@@ -16,8 +16,8 @@ beforeEach(function () {
 test('new domain creates site that needs setup', function () {
     // Simulate a request from a new domain
     $response = $this->withHeaders(['Host' => 'new-domain.test'])
-                     ->get('/');
-    
+        ->get('/');
+
     // Check that a site was created
     $site = Site::where('domain', 'new-domain.test')->first();
     expect($site)->not->toBeNull();
@@ -33,13 +33,13 @@ test('unauthenticated user cannot access installation page', function () {
         'active' => true,
         'is_setup_complete' => false,
     ]);
-    
+
     app()->instance('site', $site);
-    
+
     // Try to access installation page without authentication
     $response = $this->withHeaders(['Host' => 'test-install.local'])
-                     ->get('/admin/site-installation');
-    
+        ->get('/admin/site-installation');
+
     // Should be redirected to login
     $response->assertRedirect();
 });
@@ -52,14 +52,14 @@ test('authenticated user with incomplete site setup is redirected to installatio
         'active' => true,
         'is_setup_complete' => false,
     ]);
-    
+
     app()->instance('site', $site);
-    
+
     // Access admin dashboard as authenticated user
     $response = $this->actingAs($this->user)
-                     ->withHeaders(['Host' => 'test-install.local'])
-                     ->get('/admin');
-    
+        ->withHeaders(['Host' => 'test-install.local'])
+        ->get('/admin');
+
     // Should be redirected to installation page
     $response->assertRedirect('/admin/site-installation');
 });
@@ -72,14 +72,14 @@ test('authenticated user with complete site setup can access admin', function ()
         'active' => true,
         'is_setup_complete' => true,
     ]);
-    
+
     app()->instance('site', $site);
-    
+
     // Access admin dashboard as authenticated user
     $response = $this->actingAs($this->user)
-                     ->withHeaders(['Host' => 'test-complete.local'])
-                     ->get('/admin');
-    
+        ->withHeaders(['Host' => 'test-complete.local'])
+        ->get('/admin');
+
     // Should be able to access admin
     $response->assertStatus(200);
 });
@@ -92,14 +92,14 @@ test('installation page can be accessed for incomplete site', function () {
         'active' => true,
         'is_setup_complete' => false,
     ]);
-    
+
     app()->instance('site', $site);
-    
+
     // Access installation page as authenticated user
     $response = $this->actingAs($this->user)
-                     ->withHeaders(['Host' => 'test-install.local'])
-                     ->get('/admin/site-installation');
-    
+        ->withHeaders(['Host' => 'test-install.local'])
+        ->get('/admin/site-installation');
+
     // Should be able to access installation page
     $response->assertStatus(200);
     $response->assertSee('Complete Site Setup');
@@ -114,12 +114,12 @@ test('site can be marked as setup complete', function () {
         'active' => true,
         'is_setup_complete' => false,
     ]);
-    
+
     expect($site->needsSetup())->toBeTrue();
-    
+
     // Mark as setup complete
     $site->markSetupComplete();
-    
+
     expect($site->fresh()->needsSetup())->toBeFalse();
     expect($site->fresh()->is_setup_complete)->toBeTrue();
 });

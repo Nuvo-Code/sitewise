@@ -18,7 +18,7 @@ class CachePerformanceWidget extends BaseWidget
     {
         $site = app('site');
 
-        if (!$site) {
+        if (! $site) {
             return [
                 Stat::make('No Site Available', 'N/A')
                     ->description('Cache stats require a valid site')
@@ -40,7 +40,7 @@ class CachePerformanceWidget extends BaseWidget
 
         // Site Cache Keys
         $totalSiteKeys = array_sum($siteCacheUsage);
-        $description = $cacheWorking ? $site->name . ' cached items' : 'Simulated data (cache unavailable)';
+        $description = $cacheWorking ? $site->name.' cached items' : 'Simulated data (cache unavailable)';
         $stats[] = Stat::make('Site Cache Keys', number_format($totalSiteKeys))
             ->description($description)
             ->descriptionIcon('heroicon-m-building-office')

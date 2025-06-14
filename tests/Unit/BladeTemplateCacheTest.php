@@ -1,10 +1,10 @@
 <?php
 
-use App\Services\BladeTemplateService;
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Models\TemplateContent;
+use App\Services\BladeTemplateService;
 use Illuminate\Support\Facades\Cache;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -24,6 +24,7 @@ test('blade template renders different variables correctly after caching', funct
         ]);
     } catch (\Exception $e) {
         $this->markTestSkipped('Database not available');
+
         return;
     }
 
@@ -112,12 +113,12 @@ test('cache key generation includes content hash', function () {
     $template = '<h1>{{ $title }}</h1><p>{{ $content }}</p>';
     $updatedAt = '2024-01-01 00:00:00';
 
-    $hash1 = md5(serialize($variables1) . $template . $updatedAt);
-    $hash2 = md5(serialize($variables2) . $template . $updatedAt);
+    $hash1 = md5(serialize($variables1).$template.$updatedAt);
+    $hash2 = md5(serialize($variables2).$template.$updatedAt);
 
     expect($hash1)->not->toBe($hash2);
 
     // Same variables should generate same hash
-    $hash1Again = md5(serialize($variables1) . $template . $updatedAt);
+    $hash1Again = md5(serialize($variables1).$template.$updatedAt);
     expect($hash1)->toBe($hash1Again);
 });

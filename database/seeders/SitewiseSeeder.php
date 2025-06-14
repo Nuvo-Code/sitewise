@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Models\TemplateContent;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SitewiseSeeder extends Seeder
@@ -37,59 +36,59 @@ class SitewiseSeeder extends Seeder
             ],
             [
                 'description' => 'A template for landing pages with hero section and CTA',
-            'structure' => [
-                [
-                    'name' => 'Hero Title',
-                    'key' => 'hero_title',
-                    'type' => 'text',
-                    'required' => true,
-                    'description' => 'The main headline for the hero section',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => ['max:100'],
+                'structure' => [
+                    [
+                        'name' => 'Hero Title',
+                        'key' => 'hero_title',
+                        'type' => 'text',
+                        'required' => true,
+                        'description' => 'The main headline for the hero section',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => ['max:100'],
+                    ],
+                    [
+                        'name' => 'Hero Subtitle',
+                        'key' => 'hero_subtitle',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'description' => 'Supporting text for the hero section',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => ['max:255'],
+                    ],
+                    [
+                        'name' => 'CTA Text',
+                        'key' => 'cta_text',
+                        'type' => 'text',
+                        'required' => true,
+                        'description' => 'Call-to-action button text',
+                        'default_value' => 'Get Started',
+                        'options' => [],
+                        'validation_rules' => ['max:50'],
+                    ],
+                    [
+                        'name' => 'CTA Link',
+                        'key' => 'cta_link',
+                        'type' => 'url',
+                        'required' => true,
+                        'description' => 'URL for the call-to-action button',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => ['url'],
+                    ],
+                    [
+                        'name' => 'Features',
+                        'key' => 'features',
+                        'type' => 'rich_text',
+                        'required' => false,
+                        'description' => 'List of key features or benefits',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => [],
+                    ],
                 ],
-                [
-                    'name' => 'Hero Subtitle',
-                    'key' => 'hero_subtitle',
-                    'type' => 'textarea',
-                    'required' => false,
-                    'description' => 'Supporting text for the hero section',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => ['max:255'],
-                ],
-                [
-                    'name' => 'CTA Text',
-                    'key' => 'cta_text',
-                    'type' => 'text',
-                    'required' => true,
-                    'description' => 'Call-to-action button text',
-                    'default_value' => 'Get Started',
-                    'options' => [],
-                    'validation_rules' => ['max:50'],
-                ],
-                [
-                    'name' => 'CTA Link',
-                    'key' => 'cta_link',
-                    'type' => 'url',
-                    'required' => true,
-                    'description' => 'URL for the call-to-action button',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => ['url'],
-                ],
-                [
-                    'name' => 'Features',
-                    'key' => 'features',
-                    'type' => 'rich_text',
-                    'required' => false,
-                    'description' => 'List of key features or benefits',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => [],
-                ],
-            ],
-            'blade_template' => '<!DOCTYPE html>
+                'blade_template' => '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -166,69 +165,69 @@ class SitewiseSeeder extends Seeder
             ],
             [
                 'description' => 'A template for blog posts with author info and content',
-            'structure' => [
-                [
-                    'name' => 'Post Title',
-                    'key' => 'post_title',
-                    'type' => 'text',
-                    'required' => true,
-                    'description' => 'The main title of the blog post',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => ['max:150'],
+                'structure' => [
+                    [
+                        'name' => 'Post Title',
+                        'key' => 'post_title',
+                        'type' => 'text',
+                        'required' => true,
+                        'description' => 'The main title of the blog post',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => ['max:150'],
+                    ],
+                    [
+                        'name' => 'Author Name',
+                        'key' => 'author_name',
+                        'type' => 'text',
+                        'required' => true,
+                        'description' => 'Name of the post author',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => ['max:100'],
+                    ],
+                    [
+                        'name' => 'Publication Date',
+                        'key' => 'pub_date',
+                        'type' => 'date',
+                        'required' => true,
+                        'description' => 'When the post was published',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => [],
+                    ],
+                    [
+                        'name' => 'Featured Image',
+                        'key' => 'featured_image',
+                        'type' => 'image',
+                        'required' => false,
+                        'description' => 'Main image for the blog post',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => [],
+                    ],
+                    [
+                        'name' => 'Post Content',
+                        'key' => 'post_content',
+                        'type' => 'rich_text',
+                        'required' => true,
+                        'description' => 'The main content of the blog post',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => [],
+                    ],
+                    [
+                        'name' => 'Tags',
+                        'key' => 'tags',
+                        'type' => 'text',
+                        'required' => false,
+                        'description' => 'Comma-separated tags',
+                        'default_value' => null,
+                        'options' => [],
+                        'validation_rules' => [],
+                    ],
                 ],
-                [
-                    'name' => 'Author Name',
-                    'key' => 'author_name',
-                    'type' => 'text',
-                    'required' => true,
-                    'description' => 'Name of the post author',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => ['max:100'],
-                ],
-                [
-                    'name' => 'Publication Date',
-                    'key' => 'pub_date',
-                    'type' => 'date',
-                    'required' => true,
-                    'description' => 'When the post was published',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => [],
-                ],
-                [
-                    'name' => 'Featured Image',
-                    'key' => 'featured_image',
-                    'type' => 'image',
-                    'required' => false,
-                    'description' => 'Main image for the blog post',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => [],
-                ],
-                [
-                    'name' => 'Post Content',
-                    'key' => 'post_content',
-                    'type' => 'rich_text',
-                    'required' => true,
-                    'description' => 'The main content of the blog post',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => [],
-                ],
-                [
-                    'name' => 'Tags',
-                    'key' => 'tags',
-                    'type' => 'text',
-                    'required' => false,
-                    'description' => 'Comma-separated tags',
-                    'default_value' => null,
-                    'options' => [],
-                    'validation_rules' => [],
-                ],
-            ],
-            'blade_template' => '<!DOCTYPE html>
+                'blade_template' => '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -321,7 +320,7 @@ class SitewiseSeeder extends Seeder
                 'endpoints' => [
                     '/api/pages',
                     '/api/templates',
-                ]
+                ],
             ],
             'active' => true,
         ]);

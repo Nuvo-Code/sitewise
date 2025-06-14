@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Page;
 use App\Models\Site;
 use App\Models\Template;
-use App\Models\TemplateContent;
 use App\Services\BladeTemplateService;
 use App\Services\TemplateContentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +16,7 @@ class BladeTemplateTest extends TestCase
     use RefreshDatabase;
 
     protected Site $site;
+
     protected Template $template;
 
     protected function setUp(): void
@@ -224,8 +224,8 @@ class BladeTemplateTest extends TestCase
         BladeTemplateService::renderPage($page);
 
         // Check that template view file was created
-        $viewName = 'templates.site_' . $this->site->id . '.template_' . $this->template->id;
-        $viewPath = resource_path('views/' . str_replace('.', '/', $viewName) . '.blade.php');
+        $viewName = 'templates.site_'.$this->site->id.'.template_'.$this->template->id;
+        $viewPath = resource_path('views/'.str_replace('.', '/', $viewName).'.blade.php');
         $this->assertTrue(File::exists($viewPath));
 
         // Clear the cache

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Page;
 use App\Models\Template;
-use App\Services\CacheService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,7 +14,7 @@ class BladeTemplateService
      */
     public static function renderPage(Page $page): string
     {
-        if (!$page->template || !$page->template->hasBladeTemplate()) {
+        if (! $page->template || ! $page->template->hasBladeTemplate()) {
             throw new \Exception('Page does not have a valid Blade template');
         }
 
@@ -28,8 +27,8 @@ class BladeTemplateService
         $variables = self::prepareTemplateVariables($page, $templateContent);
 
         // Create a cache key that includes the template version and content hash
-        $contentHash = md5(serialize($variables) . $template->blade_template . $template->updated_at);
-        $cacheKey = CacheService::siteKey(CacheService::BLADE_TEMPLATE_PREFIX, $page->site_id, $template->id . ':' . $contentHash);
+        $contentHash = md5(serialize($variables).$template->blade_template.$template->updated_at);
+        $cacheKey = CacheService::siteKey(CacheService::BLADE_TEMPLATE_PREFIX, $page->site_id, $template->id.':'.$contentHash);
 
         // Check for cached rendered output
         $cachedOutput = Cache::get($cacheKey);
@@ -45,8 +44,6 @@ class BladeTemplateService
 
         return $rendered;
     }
-
-
 
     /**
      * Compile and render a Blade template string with variables
@@ -76,7 +73,7 @@ class BladeTemplateService
         } catch (\Throwable $e) {
             ob_end_clean();
             unlink($tempFile);
-            throw new \Exception('Error rendering Blade template: ' . $e->getMessage());
+            throw new \Exception('Error rendering Blade template: '.$e->getMessage());
         } finally {
             ob_end_clean();
             if (file_exists($tempFile)) {
@@ -153,9 +150,9 @@ class BladeTemplateService
             Blade::compileString($bladeTemplate);
 
         } catch (\ParseError $e) {
-            $errors[] = 'Blade template has syntax errors: ' . $e->getMessage();
+            $errors[] = 'Blade template has syntax errors: '.$e->getMessage();
         } catch (\Exception $e) {
-            $errors[] = 'Blade compilation error: ' . $e->getMessage();
+            $errors[] = 'Blade compilation error: '.$e->getMessage();
         }
 
         return $errors;
@@ -180,7 +177,7 @@ class BladeTemplateService
         // Add template fields as available variables
         $fields = $template->getFieldsForFormAttribute();
         foreach ($fields as $field) {
-            $variables['template_content[\'' . $field['type']['key'] . '\']'] = $field['description'] ?: $field['type']['name'];
+            $variables['template_content[\''.$field['type']['key'].'\']'] = $field['description'] ?: $field['type']['name'];
         }
 
         return $variables;
@@ -192,7 +189,7 @@ class BladeTemplateService
     public static function generateSampleBladeTemplate(Template $template): string
     {
         $fields = $template->getFieldsForFormAttribute();
-        
+
         $sample = "<!DOCTYPE html>\n";
         $sample .= "<html lang=\"en\">\n";
         $sample .= "<head>\n";
@@ -222,7 +219,7 @@ class BladeTemplateService
             $type = $field['type']['type'];
 
             $sample .= "            <!-- {{-- {$name} ({$id}) --}} -->\n";
-            
+
             if ($type === 'rich_text' || $type === 'textarea') {
                 $sample .= "            <div class=\"{$id}\">\n";
                 $sample .= "                {!! \$template_content['{$key}'] !!}\n";
@@ -252,7 +249,7 @@ class BladeTemplateService
         $sample .= "        </footer>\n";
         $sample .= "    </div>\n";
         $sample .= "</body>\n";
-        $sample .= "</html>";
+        $sample .= '</html>';
 
         return $sample;
     }

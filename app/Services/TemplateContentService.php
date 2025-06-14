@@ -128,7 +128,7 @@ class TemplateContentService
             }
 
             // Apply validation rules
-            if (!empty($validationRules)) {
+            if (! empty($validationRules)) {
                 $component->rules($validationRules);
             }
         }
@@ -141,7 +141,7 @@ class TemplateContentService
      */
     public static function getContentForPage(Page $page): array
     {
-        if (!$page->template) {
+        if (! $page->template) {
             return [];
         }
 
@@ -155,7 +155,7 @@ class TemplateContentService
      */
     public static function updateContentForPage(Page $page, array $content): void
     {
-        if (!$page->template) {
+        if (! $page->template) {
             return;
         }
 
@@ -191,7 +191,7 @@ class TemplateContentService
      */
     public static function autoGenerateContentFields(Page $page): void
     {
-        if (!$page->template) {
+        if (! $page->template) {
             return;
         }
 
@@ -204,7 +204,7 @@ class TemplateContentService
         foreach ($templateFields as $field) {
             $key = $field['key'];
 
-            if (!in_array($key, $existingKeys)) {
+            if (! in_array($key, $existingKeys)) {
                 // Ensure value is never null - use empty string as fallback
                 $defaultValue = $field['default_value'] ?? '';
                 if ($defaultValue === null) {

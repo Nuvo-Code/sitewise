@@ -55,7 +55,7 @@ class Site extends Model
 
     public function needsSetup(): bool
     {
-        return !$this->is_setup_complete;
+        return ! $this->is_setup_complete;
     }
 
     /**
@@ -91,7 +91,8 @@ class Site extends Model
     public function isAiEnabled(): bool
     {
         $config = $this->getAiConfiguration();
-        return !empty($config['enabled']) && !empty($config['api_key']);
+
+        return ! empty($config['enabled']) && ! empty($config['api_key']);
     }
 
     /**
@@ -100,6 +101,7 @@ class Site extends Model
     public function getAiModel(): string
     {
         $config = $this->getAiConfiguration();
+
         return $config['model'] ?? 'gpt-4o-mini';
     }
 
@@ -109,6 +111,7 @@ class Site extends Model
     public function getAiProvider(): string
     {
         $config = $this->getAiConfiguration();
+
         return $config['provider'] ?? 'openai';
     }
 }

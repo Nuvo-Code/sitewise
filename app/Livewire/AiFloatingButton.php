@@ -4,18 +4,25 @@ namespace App\Livewire;
 
 use App\Models\Site;
 use App\Services\AiContentService;
-use Livewire\Component;
 use Filament\Notifications\Notification;
+use Livewire\Component;
 
 class AiFloatingButton extends Component
 {
     public $showPromptModal = false;
+
     public $showResponseModal = false;
+
     public $prompt = '';
+
     public $generatedContent = '';
+
     public $isGenerating = false;
+
     public $error = '';
+
     public $model = '';
+
     public $provider = '';
 
     protected $aiContentService;
@@ -29,7 +36,7 @@ class AiFloatingButton extends Component
     {
         // Check if AI is enabled for the current site
         $site = app('site');
-        if (!$site || !$site->isAiEnabled()) {
+        if (! $site || ! $site->isAiEnabled()) {
             return;
         }
     }
@@ -38,12 +45,13 @@ class AiFloatingButton extends Component
     {
         $site = app('site');
 
-        if (!$site || !$site->isAiEnabled()) {
+        if (! $site || ! $site->isAiEnabled()) {
             Notification::make()
                 ->title('AI Not Configured')
                 ->body('Please configure AI settings in your site settings first.')
                 ->warning()
                 ->send();
+
             return;
         }
 
@@ -65,8 +73,9 @@ class AiFloatingButton extends Component
 
         $site = app('site');
 
-        if (!$site || !$site->isAiEnabled()) {
+        if (! $site || ! $site->isAiEnabled()) {
             $this->error = 'AI is not configured for this site.';
+
             return;
         }
 
@@ -92,7 +101,7 @@ class AiFloatingButton extends Component
                 $this->error = $result['error'];
             }
         } catch (\Exception $e) {
-            $this->error = 'An unexpected error occurred: ' . $e->getMessage();
+            $this->error = 'An unexpected error occurred: '.$e->getMessage();
         } finally {
             $this->isGenerating = false;
         }

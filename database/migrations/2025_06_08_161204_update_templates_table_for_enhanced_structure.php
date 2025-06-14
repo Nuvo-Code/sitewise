@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\Template;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -14,7 +14,7 @@ return new class extends Migration
         $templates = Template::all();
 
         foreach ($templates as $template) {
-            if (!empty($template->structure) && is_array($template->structure)) {
+            if (! empty($template->structure) && is_array($template->structure)) {
                 $newStructure = [];
 
                 foreach ($template->structure as $key => $type) {
@@ -50,7 +50,7 @@ return new class extends Migration
         $templates = Template::all();
 
         foreach ($templates as $template) {
-            if (!empty($template->structure) && is_array($template->structure)) {
+            if (! empty($template->structure) && is_array($template->structure)) {
                 $oldStructure = [];
 
                 foreach ($template->structure as $field) {

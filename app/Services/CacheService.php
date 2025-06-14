@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Models\TemplateContent;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 
 class CacheService
 {
@@ -35,23 +35,31 @@ class CacheService
     {
         return config('cache.sitewise.blade_template_ttl', 86400);
     }
-    
+
     /**
      * Cache key prefixes for different data types
      */
     const SITE_PREFIX = 'site';
+
     const PAGE_PREFIX = 'page';
+
     const TEMPLATE_PREFIX = 'template';
+
     const TEMPLATE_CONTENT_PREFIX = 'template_content';
+
     const BLADE_TEMPLATE_PREFIX = 'blade_template';
+
     const SITE_STATS_PREFIX = 'site_stats';
-    
+
     /**
      * Cache tags for better invalidation
      */
     const SITE_TAG = 'sites';
+
     const PAGE_TAG = 'pages';
+
     const TEMPLATE_TAG = 'templates';
+
     const CONTENT_TAG = 'content';
 
     /**
@@ -63,6 +71,7 @@ class CacheService
         if ($identifier) {
             $key .= ":{$identifier}";
         }
+
         return $key;
     }
 
@@ -86,6 +95,7 @@ class CacheService
         if (is_array($cached)) {
             // Clear the corrupted cache entry
             Cache::forget($key);
+
             // Return fresh model instance
             return Site::find($siteId);
         }
@@ -97,6 +107,7 @@ class CacheService
 
         // If we get here, something unexpected happened - clear cache and return fresh
         Cache::forget($key);
+
         return Site::find($siteId);
     }
 
@@ -120,6 +131,7 @@ class CacheService
         if (is_array($cached)) {
             // Clear the corrupted cache entry
             Cache::forget($key);
+
             // Return fresh model instance
             return Site::where('domain', $domain)->first();
         }
@@ -131,6 +143,7 @@ class CacheService
 
         // If we get here, something unexpected happened - clear cache and return fresh
         Cache::forget($key);
+
         return Site::where('domain', $domain)->first();
     }
 
@@ -143,10 +156,10 @@ class CacheService
 
         $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $slug) {
             return Page::where('site_id', $siteId)
-                      ->where('slug', $slug)
-                      ->where('active', true)
-                      ->with(['template', 'templateContents'])
-                      ->first();
+                ->where('slug', $slug)
+                ->where('active', true)
+                ->with(['template', 'templateContents'])
+                ->first();
         });
 
         // Handle cache serialization issues - ensure we return a proper Page model or null
@@ -158,12 +171,13 @@ class CacheService
         if (is_array($cached)) {
             // Clear the corrupted cache entry
             Cache::forget($key);
+
             // Return fresh model instance
             return Page::where('site_id', $siteId)
-                      ->where('slug', $slug)
-                      ->where('active', true)
-                      ->with(['template', 'templateContents'])
-                      ->first();
+                ->where('slug', $slug)
+                ->where('active', true)
+                ->with(['template', 'templateContents'])
+                ->first();
         }
 
         // If it's already a Page model, return it
@@ -173,11 +187,12 @@ class CacheService
 
         // If we get here, something unexpected happened - clear cache and return fresh
         Cache::forget($key);
+
         return Page::where('site_id', $siteId)
-                  ->where('slug', $slug)
-                  ->where('active', true)
-                  ->with(['template', 'templateContents'])
-                  ->first();
+            ->where('slug', $slug)
+            ->where('active', true)
+            ->with(['template', 'templateContents'])
+            ->first();
     }
 
     /**
@@ -189,9 +204,9 @@ class CacheService
 
         $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId) {
             return Page::where('site_id', $siteId)
-                      ->where('active', true)
-                      ->with(['template'])
-                      ->get();
+                ->where('active', true)
+                ->with(['template'])
+                ->get();
         });
 
         // Handle cache serialization issues - ensure we return a proper Collection
@@ -203,11 +218,12 @@ class CacheService
         if (is_array($cached)) {
             // Clear the corrupted cache entry
             Cache::forget($key);
+
             // Return fresh collection
             return Page::where('site_id', $siteId)
-                      ->where('active', true)
-                      ->with(['template'])
-                      ->get();
+                ->where('active', true)
+                ->with(['template'])
+                ->get();
         }
 
         // If it's already a Collection, return it
@@ -217,10 +233,11 @@ class CacheService
 
         // If we get here, something unexpected happened - clear cache and return fresh
         Cache::forget($key);
+
         return Page::where('site_id', $siteId)
-                  ->where('active', true)
-                  ->with(['template'])
-                  ->get();
+            ->where('active', true)
+            ->with(['template'])
+            ->get();
     }
 
     /**
@@ -236,10 +253,10 @@ class CacheService
 
             foreach ($homepageSlugs as $slug) {
                 $page = Page::where('site_id', $siteId)
-                          ->where('slug', $slug)
-                          ->where('active', true)
-                          ->with(['template', 'templateContents'])
-                          ->first();
+                    ->where('slug', $slug)
+                    ->where('active', true)
+                    ->with(['template', 'templateContents'])
+                    ->first();
                 if ($page) {
                     return $page;
                 }
@@ -247,9 +264,9 @@ class CacheService
 
             // If no specific homepage found, return the first active page
             return Page::where('site_id', $siteId)
-                      ->where('active', true)
-                      ->with(['template', 'templateContents'])
-                      ->first();
+                ->where('active', true)
+                ->with(['template', 'templateContents'])
+                ->first();
         });
 
         // Handle cache serialization issues - ensure we return a proper Page model or null
@@ -266,19 +283,19 @@ class CacheService
 
             foreach ($homepageSlugs as $slug) {
                 $page = Page::where('site_id', $siteId)
-                          ->where('slug', $slug)
-                          ->where('active', true)
-                          ->with(['template', 'templateContents'])
-                          ->first();
+                    ->where('slug', $slug)
+                    ->where('active', true)
+                    ->with(['template', 'templateContents'])
+                    ->first();
                 if ($page) {
                     return $page;
                 }
             }
 
             return Page::where('site_id', $siteId)
-                      ->where('active', true)
-                      ->with(['template', 'templateContents'])
-                      ->first();
+                ->where('active', true)
+                ->with(['template', 'templateContents'])
+                ->first();
         }
 
         // If it's already a Page model, return it
@@ -292,19 +309,19 @@ class CacheService
 
         foreach ($homepageSlugs as $slug) {
             $page = Page::where('site_id', $siteId)
-                      ->where('slug', $slug)
-                      ->where('active', true)
-                      ->with(['template', 'templateContents'])
-                      ->first();
+                ->where('slug', $slug)
+                ->where('active', true)
+                ->with(['template', 'templateContents'])
+                ->first();
             if ($page) {
                 return $page;
             }
         }
 
         return Page::where('site_id', $siteId)
-                  ->where('active', true)
-                  ->with(['template', 'templateContents'])
-                  ->first();
+            ->where('active', true)
+            ->with(['template', 'templateContents'])
+            ->first();
     }
 
     /**
@@ -316,9 +333,9 @@ class CacheService
 
         $cached = Cache::remember($key, self::getDefaultTTL(), function () use ($siteId, $templateId) {
             return Template::where('site_id', $siteId)
-                          ->where('id', $templateId)
-                          ->where('active', true)
-                          ->first();
+                ->where('id', $templateId)
+                ->where('active', true)
+                ->first();
         });
 
         // Handle cache serialization issues - ensure we return a proper Template model or null
@@ -330,11 +347,12 @@ class CacheService
         if (is_array($cached)) {
             // Clear the corrupted cache entry
             Cache::forget($key);
+
             // Return fresh model instance
             return Template::where('site_id', $siteId)
-                          ->where('id', $templateId)
-                          ->where('active', true)
-                          ->first();
+                ->where('id', $templateId)
+                ->where('active', true)
+                ->first();
         }
 
         // If it's already a Template model, return it
@@ -344,10 +362,11 @@ class CacheService
 
         // If we get here, something unexpected happened - clear cache and return fresh
         Cache::forget($key);
+
         return Template::where('site_id', $siteId)
-                      ->where('id', $templateId)
-                      ->where('active', true)
-                      ->first();
+            ->where('id', $templateId)
+            ->where('active', true)
+            ->first();
     }
 
     /**
@@ -356,11 +375,11 @@ class CacheService
     public static function getTemplateContent(int $pageId): array
     {
         $key = self::siteKey(self::TEMPLATE_CONTENT_PREFIX, 0, "page:{$pageId}");
-        
+
         return Cache::remember($key, self::getDefaultTTL(), function () use ($pageId) {
             return TemplateContent::where('page_id', $pageId)
-                                 ->pluck('value', 'key')
-                                 ->toArray();
+                ->pluck('value', 'key')
+                ->toArray();
         });
     }
 
@@ -370,7 +389,7 @@ class CacheService
      */
     public static function clearBladeTemplateCache(int $siteId, int $templateId): void
     {
-        $pattern = self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId, $templateId) . ':*';
+        $pattern = self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId, $templateId).':*';
         self::clearCacheByPattern($pattern);
     }
 
@@ -380,7 +399,7 @@ class CacheService
     public static function getSiteStats(int $siteId): array
     {
         $key = self::siteKey(self::SITE_STATS_PREFIX, $siteId);
-        
+
         return Cache::remember($key, self::getStatsTTL(), function () use ($siteId) {
             return [
                 'pages_count' => Page::where('site_id', $siteId)->count(),
@@ -400,11 +419,11 @@ class CacheService
     public static function clearSiteCache(int $siteId): void
     {
         $patterns = [
-            self::siteKey(self::SITE_PREFIX, $siteId) . '*',
-            self::siteKey(self::PAGE_PREFIX, $siteId) . '*',
-            self::siteKey(self::TEMPLATE_PREFIX, $siteId) . '*',
-            self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId) . '*',
-            self::siteKey(self::SITE_STATS_PREFIX, $siteId) . '*',
+            self::siteKey(self::SITE_PREFIX, $siteId).'*',
+            self::siteKey(self::PAGE_PREFIX, $siteId).'*',
+            self::siteKey(self::TEMPLATE_PREFIX, $siteId).'*',
+            self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId).'*',
+            self::siteKey(self::SITE_STATS_PREFIX, $siteId).'*',
         ];
 
         foreach ($patterns as $pattern) {
@@ -425,12 +444,12 @@ class CacheService
             $homepageKey = self::siteKey(self::PAGE_PREFIX, $siteId, 'homepage');
             Cache::forget($homepageKey);
         } else {
-            $pattern = self::siteKey(self::PAGE_PREFIX, $siteId) . '*';
+            $pattern = self::siteKey(self::PAGE_PREFIX, $siteId).'*';
             self::clearCacheByPattern($pattern);
         }
 
         // Also clear template content cache for pages
-        $pattern = self::siteKey(self::TEMPLATE_CONTENT_PREFIX, 0) . '*';
+        $pattern = self::siteKey(self::TEMPLATE_CONTENT_PREFIX, 0).'*';
         self::clearCacheByPattern($pattern);
     }
 
@@ -448,8 +467,8 @@ class CacheService
             self::clearBladeTemplateCache($siteId, $templateId);
         } else {
             $patterns = [
-                self::siteKey(self::TEMPLATE_PREFIX, $siteId) . '*',
-                self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId) . '*',
+                self::siteKey(self::TEMPLATE_PREFIX, $siteId).'*',
+                self::siteKey(self::BLADE_TEMPLATE_PREFIX, $siteId).'*',
             ];
 
             foreach ($patterns as $pattern) {
@@ -468,7 +487,7 @@ class CacheService
         if ($driver === 'redis') {
             $redis = Cache::getRedis();
             $keys = $redis->keys($pattern);
-            if (!empty($keys)) {
+            if (! empty($keys)) {
                 $redis->del($keys);
             }
         } else {
@@ -542,7 +561,7 @@ class CacheService
                     : 0;
             } elseif ($driver === 'database') {
                 $stats['total_keys'] = DB::table('cache')->count();
-                $stats['memory_usage'] = DB::table('cache')->sum(DB::raw('LENGTH(value)')) . ' bytes';
+                $stats['memory_usage'] = DB::table('cache')->sum(DB::raw('LENGTH(value)')).' bytes';
             }
         } catch (\Exception $e) {
             // Silently handle errors
@@ -571,7 +590,7 @@ class CacheService
         $cacheWorking = self::isCacheWorking();
 
         foreach ($prefixes as $type => $prefix) {
-            if (!$cacheWorking) {
+            if (! $cacheWorking) {
                 // If cache isn't working, return simulated data for demo purposes
                 $usage[$type] = self::getSimulatedCacheCount($type, $siteId);
             } else {
@@ -596,10 +615,11 @@ class CacheService
     public static function isCacheWorking(): bool
     {
         try {
-            $testKey = 'cache_test_' . time();
+            $testKey = 'cache_test_'.time();
             Cache::put($testKey, 'test', 1);
             $result = Cache::get($testKey) === 'test';
             Cache::forget($testKey);
+
             return $result;
         } catch (\Exception $e) {
             return false;
@@ -642,7 +662,9 @@ class CacheService
                 case self::SITE_PREFIX:
                     // Check site cache key
                     $siteKey = self::siteKey(self::SITE_PREFIX, $siteId);
-                    if (Cache::has($siteKey)) $count++;
+                    if (Cache::has($siteKey)) {
+                        $count++;
+                    }
 
                     // Check site by domain cache (we'd need to know the domain)
                     break;
@@ -650,7 +672,9 @@ class CacheService
                 case self::PAGE_PREFIX:
                     // Check site pages cache
                     $pagesKey = self::siteKey(self::PAGE_PREFIX, $siteId, 'all');
-                    if (Cache::has($pagesKey)) $count++;
+                    if (Cache::has($pagesKey)) {
+                        $count++;
+                    }
                     break;
 
                 case self::TEMPLATE_PREFIX:
@@ -660,7 +684,9 @@ class CacheService
                 case self::SITE_STATS_PREFIX:
                     // Check site stats cache
                     $statsKey = self::siteKey(self::SITE_STATS_PREFIX, $siteId);
-                    if (Cache::has($statsKey)) $count++;
+                    if (Cache::has($statsKey)) {
+                        $count++;
+                    }
                     break;
             }
         } catch (\Exception $e) {
@@ -682,12 +708,14 @@ class CacheService
                 $redis = Cache::getRedis();
                 // Add Laravel's cache prefix to the pattern
                 $prefix = config('cache.prefix', '');
-                $fullPattern = $prefix ? $prefix . $pattern . '*' : $pattern . '*';
+                $fullPattern = $prefix ? $prefix.$pattern.'*' : $pattern.'*';
+
                 return count($redis->keys($fullPattern));
             } elseif ($driver === 'database') {
                 // Add Laravel's cache prefix to the pattern
                 $prefix = config('cache.prefix', '');
-                $fullPattern = $prefix ? $prefix . $pattern . '%' : $pattern . '%';
+                $fullPattern = $prefix ? $prefix.$pattern.'%' : $pattern.'%';
+
                 return DB::table(config('cache.stores.database.table', 'cache'))
                     ->where('key', 'like', $fullPattern)
                     ->count();
@@ -709,12 +737,13 @@ class CacheService
     {
         try {
             $cachePath = config('cache.stores.file.path', storage_path('framework/cache/data'));
-            if (!is_dir($cachePath)) {
+            if (! is_dir($cachePath)) {
                 return 0;
             }
 
             // This is a rough approximation for file cache
-            $files = glob($cachePath . '/*');
+            $files = glob($cachePath.'/*');
+
             return count($files);
         } catch (\Exception $e) {
             return 0;
@@ -799,7 +828,7 @@ class CacheService
 
             try {
                 if ($driver === 'database') {
-                    $fullPattern = $prefix ? $prefix . $pattern . '%' : $pattern . '%';
+                    $fullPattern = $prefix ? $prefix.$pattern.'%' : $pattern.'%';
                     $keys = DB::table(config('cache.stores.database.table', 'cache'))
                         ->where('key', 'like', $fullPattern)
                         ->pluck('key')
@@ -807,7 +836,7 @@ class CacheService
                     $debug['keys_found'][$type] = $keys;
                 } elseif ($driver === 'redis') {
                     $redis = Cache::getRedis();
-                    $fullPattern = $prefix ? $prefix . $pattern . '*' : $pattern . '*';
+                    $fullPattern = $prefix ? $prefix.$pattern.'*' : $pattern.'*';
                     $keys = $redis->keys($fullPattern);
                     $debug['keys_found'][$type] = $keys;
                 }

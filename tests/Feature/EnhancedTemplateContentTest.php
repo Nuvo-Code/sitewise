@@ -15,6 +15,7 @@ class EnhancedTemplateContentTest extends TestCase
     use RefreshDatabase;
 
     protected Site $site;
+
     protected Template $template;
 
     protected function setUp(): void
@@ -108,9 +109,9 @@ class EnhancedTemplateContentTest extends TestCase
         $components = TemplateContentService::generateFormComponents($this->template);
 
         $this->assertCount(4, $components);
-        
+
         // Check that components are generated for each field
-        $componentNames = array_map(fn($component) => $component->getName(), $components);
+        $componentNames = array_map(fn ($component) => $component->getName(), $components);
         $this->assertContains('template_content.title', $componentNames);
         $this->assertContains('template_content.content', $componentNames);
         $this->assertContains('template_content.category', $componentNames);
@@ -269,7 +270,7 @@ class EnhancedTemplateContentTest extends TestCase
         $components = TemplateContentService::generateFormComponents($codeTemplate);
         $this->assertCount(3, $components);
 
-        $componentNames = array_map(fn($component) => $component->getName(), $components);
+        $componentNames = array_map(fn ($component) => $component->getName(), $components);
         $this->assertContains('template_content.custom_html', $componentNames);
         $this->assertContains('template_content.custom_css', $componentNames);
         $this->assertContains('template_content.custom_js', $componentNames);

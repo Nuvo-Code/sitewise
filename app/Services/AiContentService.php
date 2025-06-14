@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\Site;
-use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use Illuminate\Support\Facades\Log;
-use Prism\Prism\Prism;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Prism;
 
 class AiContentService
 {
@@ -17,7 +17,7 @@ class AiContentService
     public function generateContent(Site $site, string $prompt): array
     {
         try {
-            if (!$site->isAiEnabled()) {
+            if (! $site->isAiEnabled()) {
                 return [
                     'success' => false,
                     'error' => 'AI is not enabled for this site. Please configure AI settings first.',
@@ -26,8 +26,8 @@ class AiContentService
 
             $config = $site->getAiConfiguration();
             $provider = $this->createProvider($site);
-            
-            if (!$provider) {
+
+            if (! $provider) {
                 return [
                     'success' => false,
                     'error' => 'Failed to initialize AI provider. Please check your configuration.',
@@ -64,7 +64,7 @@ class AiContentService
 
             return [
                 'success' => false,
-                'error' => 'Failed to generate content: ' . $e->getMessage(),
+                'error' => 'Failed to generate content: '.$e->getMessage(),
             ];
         }
     }
@@ -78,7 +78,7 @@ class AiContentService
         $provider = $site->getAiProvider();
         $apiKey = $config['api_key'] ?? null;
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return null;
         }
 
@@ -127,15 +127,15 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
         $content = preg_replace('/^```html\s*/', '', $content);
         $content = preg_replace('/```\s*$/', '', $content);
         $content = preg_replace('/^```\s*/', '', $content);
-        
+
         // Trim whitespace
         $content = trim($content);
-        
+
         // Basic HTML validation - ensure it starts with a tag
-        if (!preg_match('/^\s*</', $content)) {
-            $content = '<div>' . $content . '</div>';
+        if (! preg_match('/^\s*</', $content)) {
+            $content = '<div>'.$content.'</div>';
         }
-        
+
         return $content;
     }
 
@@ -184,8 +184,8 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
     {
         try {
             $provider = $this->createProvider($site);
-            
-            if (!$provider) {
+
+            if (! $provider) {
                 return [
                     'success' => false,
                     'error' => 'Failed to create provider. Check your API key.',
@@ -207,7 +207,7 @@ Return ONLY the HTML content without any markdown formatting, explanations, or c
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Configuration test failed: ' . $e->getMessage(),
+                'error' => 'Configuration test failed: '.$e->getMessage(),
             ];
         }
     }

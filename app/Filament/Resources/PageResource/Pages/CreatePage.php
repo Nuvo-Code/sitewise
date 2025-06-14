@@ -4,8 +4,8 @@ namespace App\Filament\Resources\PageResource\Pages;
 
 use App\Filament\Resources\PageResource;
 use App\Models\Page;
-use App\Services\TemplateContentService;
 use App\Services\BladeTemplateService;
+use App\Services\TemplateContentService;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePage extends CreateRecord
@@ -29,7 +29,7 @@ class CreatePage extends CreateRecord
     protected function afterCreate(): void
     {
         // Save template content after page creation
-        if (!empty($this->templateContent) && $this->record->template_id) {
+        if (! empty($this->templateContent) && $this->record->template_id) {
             TemplateContentService::updateContentForPage($this->record, $this->templateContent);
         }
 

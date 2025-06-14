@@ -8,9 +8,9 @@
 
 require_once 'vendor/autoload.php';
 
+use App\Models\Page;
 use App\Models\Site;
 use App\Models\Template;
-use App\Models\Page;
 use App\Models\TemplateContent;
 use App\Services\BladeTemplateService;
 use Illuminate\Foundation\Application;
@@ -46,10 +46,10 @@ try {
             'active' => true,
         ]
     );
-    
+
     // Bind site to app for global scope
     app()->instance('site', $site);
-    
+
     echo "✅ Site: {$site->name} ({$site->domain})\n";
 
     // Create a demo template with Blade template
@@ -123,7 +123,7 @@ try {
             'active' => true,
         ]
     );
-    
+
     echo "✅ Template: {$template->name}\n";
 
     // Create a demo page
@@ -139,7 +139,7 @@ try {
             'active' => true,
         ]
     );
-    
+
     echo "✅ Page: {$page->title} (/{$page->slug})\n";
 
     // Add template content
@@ -164,19 +164,19 @@ try {
             ['value' => $value]
         );
     }
-    
+
     echo "✅ Template content added\n\n";
 
     // Render the page using Blade template
     echo "🎨 Rendering Blade Template...\n";
     echo "==============================\n\n";
-    
+
     $renderedHtml = BladeTemplateService::renderPage($page);
-    
+
     // Save rendered HTML to a file for viewing
     $outputFile = 'blade-demo-output.html';
     file_put_contents($outputFile, $renderedHtml);
-    
+
     echo "✅ Page rendered successfully!\n";
     echo "📄 Output saved to: {$outputFile}\n";
     echo "🌐 Open the file in your browser to see the result\n\n";
@@ -188,7 +188,7 @@ try {
     foreach ($variables as $var => $description) {
         echo "• \${$var} - {$description}\n";
     }
-    
+
     echo "\n🎉 Demo completed successfully!\n";
     echo "\nTo see the Blade template in action:\n";
     echo "1. Open {$outputFile} in your browser\n";
@@ -196,6 +196,6 @@ try {
     echo "3. Check the admin panel to edit template content\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
 }

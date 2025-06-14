@@ -1,10 +1,21 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "nuvo-code/sitewise",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A Laravel-based multi-tenant platform for serving static sites under custom domains with FilamentPHP admin panels.",
+    "keywords": ["laravel", "multi-tenant", "static-sites", "filament", "cms", "website-builder"],
     "license": "MIT",
+    "homepage": "https://github.com/nuvo-code/sitewise",
+    "support": {
+        "issues": "https://github.com/nuvo-code/sitewise/issues",
+        "source": "https://github.com/nuvo-code/sitewise"
+    },
+    "authors": [
+        {
+            "name": "Nuvo Code",
+            "homepage": "https://nuvocode.com"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "abdelhamiderrahmouni/filament-monaco-editor": "^0.2.5",

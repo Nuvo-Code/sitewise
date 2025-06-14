@@ -33,22 +33,23 @@ class CacheManagementCommand extends Command
         switch ($action) {
             case 'clear':
                 return $this->clearCache($typeOption);
-            
+
             case 'warm':
                 return $this->warmCache();
-            
+
             case 'stats':
                 return $this->showStats();
-            
+
             case 'clear-site':
                 return $this->clearSiteCache($siteOption, $typeOption);
-            
+
             case 'warm-site':
                 return $this->warmSiteCache($siteOption);
-            
+
             default:
                 $this->error("Unknown action: {$action}");
                 $this->showHelp();
+
                 return 1;
         }
     }
@@ -60,20 +61,23 @@ class CacheManagementCommand extends Command
         switch ($type) {
             case 'pages':
                 $this->warn('Page-specific clearing requires site context. Use clear-site instead.');
+
                 return 1;
-            
+
             case 'templates':
                 $this->warn('Template-specific clearing requires site context. Use clear-site instead.');
+
                 return 1;
-            
+
             case 'all':
             case null:
                 CacheService::clearAllCache();
                 $this->info('✅ All cache cleared successfully');
                 break;
-            
+
             default:
                 $this->error("Unknown cache type: {$type}");
+
                 return 1;
         }
 
@@ -90,14 +94,15 @@ class CacheManagementCommand extends Command
         foreach ($sites as $site) {
             $this->line("Warming cache for site: {$site->name} ({$site->domain})");
             $warmed = CacheService::warmSiteCache($site->id);
-            
+
             $this->line("  - Pages: {$warmed['pages']}");
             $this->line("  - Templates: {$warmed['templates']}");
-            
+
             $totalWarmed += ($warmed['pages'] + $warmed['templates']);
         }
 
         $this->info("✅ Cache warmed for {$sites->count()} sites ({$totalWarmed} items)");
+
         return 0;
     }
 
@@ -107,14 +112,14 @@ class CacheManagementCommand extends Command
         $this->line('================');
 
         $stats = CacheService::getCacheStats();
-        
+
         $this->table(
             ['Metric', 'Value'],
             [
                 ['Driver', ucfirst($stats['driver'])],
                 ['Total Keys', number_format($stats['total_keys'])],
                 ['Memory Usage', $stats['memory_usage']],
-                ['Hit Rate', $stats['hit_rate'] . '%'],
+                ['Hit Rate', $stats['hit_rate'].'%'],
             ]
         );
 
@@ -129,7 +134,7 @@ class CacheManagementCommand extends Command
             foreach ($sites as $site) {
                 $usage = CacheService::getSiteCacheUsage($site->id);
                 $total = array_sum($usage);
-                
+
                 $siteData[] = [
                     $site->name,
                     $site->domain,
@@ -151,7 +156,7 @@ class CacheManagementCommand extends Command
     protected function clearSiteCache(?string $siteOption, ?string $type): int
     {
         $site = $this->resolveSite($siteOption);
-        if (!$site) {
+        if (! $site) {
             return 1;
         }
 
@@ -162,20 +167,21 @@ class CacheManagementCommand extends Command
                 CacheService::clearPageCache($site->id);
                 $this->info('✅ Pages cache cleared');
                 break;
-            
+
             case 'templates':
                 CacheService::clearTemplateCache($site->id);
                 $this->info('✅ Templates cache cleared');
                 break;
-            
+
             case 'all':
             case null:
                 CacheService::clearSiteCache($site->id);
                 $this->info('✅ All site cache cleared');
                 break;
-            
+
             default:
                 $this->error("Unknown cache type: {$type}");
+
                 return 1;
         }
 
@@ -185,15 +191,15 @@ class CacheManagementCommand extends Command
     protected function warmSiteCache(?string $siteOption): int
     {
         $site = $this->resolveSite($siteOption);
-        if (!$site) {
+        if (! $site) {
             return 1;
         }
 
         $this->info("Warming cache for site: {$site->name} ({$site->domain})");
-        
+
         $warmed = CacheService::warmSiteCache($site->id);
-        
-        $this->line("✅ Cache warmed:");
+
+        $this->line('✅ Cache warmed:');
         $this->line("  - Pages: {$warmed['pages']}");
         $this->line("  - Templates: {$warmed['templates']}");
 
@@ -202,9 +208,10 @@ class CacheManagementCommand extends Command
 
     protected function resolveSite(?string $siteOption): ?Site
     {
-        if (!$siteOption) {
+        if (! $siteOption) {
             $this->error('Site option is required for site-specific actions');
             $this->line('Use --site=ID or --site=domain.com');
+
             return null;
         }
 
@@ -223,6 +230,7 @@ class CacheManagementCommand extends Command
         }
 
         $this->error("Site not found: {$siteOption}");
+
         return null;
     }
 

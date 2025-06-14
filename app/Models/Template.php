@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class Template extends Model
 {
@@ -63,7 +63,7 @@ class Template extends Model
 
         // Check if this is the new format (array of field objects)
         $isNewFormat = is_array($this->structure) &&
-                      !empty($this->structure) &&
+                      ! empty($this->structure) &&
                       isset($this->structure[0]) &&
                       is_array($this->structure[0]) &&
                       isset($this->structure[0]['key'], $this->structure[0]['type']);
@@ -102,12 +102,13 @@ class Template extends Model
     public function getFieldByKey(string $key): ?array
     {
         $fields = $this->getFieldsForFormAttribute();
+
         return $fields[$key] ?? null;
     }
 
     public function hasBladeTemplate(): bool
     {
-        return !empty($this->blade_template);
+        return ! empty($this->blade_template);
     }
 
     public function isBladeTemplate(): bool

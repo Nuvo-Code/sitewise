@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\PageResource\Pages;
 
 use App\Filament\Resources\PageResource;
-use App\Services\TemplateContentService;
 use App\Services\BladeTemplateService;
+use App\Services\TemplateContentService;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -21,7 +21,7 @@ class EditPage extends EditRecord
                 ->color('info')
                 ->url(function (): string {
                     $site = app('site');
-                    if (!$site) {
+                    if (! $site) {
                         return '#';
                     }
 
@@ -85,7 +85,7 @@ class EditPage extends EditRecord
         }
 
         // Save template content after page update
-        if (!empty($this->templateContent) && $this->record->template_id) {
+        if (! empty($this->templateContent) && $this->record->template_id) {
             TemplateContentService::updateContentForPage($this->record, $this->templateContent);
         }
 
@@ -101,6 +101,8 @@ class EditPage extends EditRecord
     }
 
     private array $templateContent = [];
+
     private bool $templateChanged = false;
+
     private $oldTemplate = null;
 }

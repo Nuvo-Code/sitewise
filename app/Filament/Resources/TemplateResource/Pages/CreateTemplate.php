@@ -12,6 +12,7 @@ class CreateTemplate extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['site_id'] = app('site')?->id;
+
         return $data;
     }
 }

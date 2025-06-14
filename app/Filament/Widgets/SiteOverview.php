@@ -24,7 +24,7 @@ class SiteOverview extends BaseWidget
     {
         $site = app('site');
 
-        if (!$site) {
+        if (! $site) {
             return [];
         }
 
@@ -45,7 +45,7 @@ class SiteOverview extends BaseWidget
                 ->color('primary'),
 
             Stat::make(__('filament.widgets.site_overview.total_pages'), $totalPages)
-                ->description($activePages . ' ' . __('filament.widgets.site_overview.active_pages'))
+                ->description($activePages.' '.__('filament.widgets.site_overview.active_pages'))
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('success'),
 
@@ -54,8 +54,8 @@ class SiteOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-squares-2x2')
                 ->color('warning'),
 
-            Stat::make(__('filament.widgets.site_overview.page_types'), 'HTML: ' . ($pagesByType['html'] ?? 0))
-                ->description('MD: ' . ($pagesByType['markdown'] ?? 0) . ' | JSON: ' . ($pagesByType['json'] ?? 0))
+            Stat::make(__('filament.widgets.site_overview.page_types'), 'HTML: '.($pagesByType['html'] ?? 0))
+                ->description('MD: '.($pagesByType['markdown'] ?? 0).' | JSON: '.($pagesByType['json'] ?? 0))
                 ->descriptionIcon('heroicon-m-code-bracket')
                 ->color('info'),
         ];

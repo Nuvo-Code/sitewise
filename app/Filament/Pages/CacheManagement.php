@@ -3,9 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Services\CacheService;
-use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 
 class CacheManagement extends Page
 {
@@ -46,7 +46,7 @@ class CacheManagement extends Page
     {
         $site = app('site');
 
-        if (!$site) {
+        if (! $site) {
             return [];
         }
 
@@ -78,7 +78,7 @@ class CacheManagement extends Page
 
                     $message = __('filament.cache.notifications.cache_warmed_body', [
                         'pages' => $warmed['pages'] ?? 0,
-                        'templates' => $warmed['templates'] ?? 0
+                        'templates' => $warmed['templates'] ?? 0,
                     ]);
 
                     Notification::make()
@@ -137,12 +137,12 @@ class CacheManagement extends Page
                     // Debug cache keys
                     $debug = CacheService::debugSiteCacheKeys($site->id);
 
-                    $message = "Test cache populated:\n" .
-                              "Site: " . ($populated['site'] ?? 'none') . "\n" .
-                              "Page: " . ($populated['page'] ?? 'none') . "\n" .
-                              "Template: " . ($populated['template'] ?? 'none') . "\n" .
-                              "Stats: " . ($populated['stats'] ?? 'none') . "\n\n" .
-                              "Debug info: " . json_encode($debug, JSON_PRETTY_PRINT);
+                    $message = "Test cache populated:\n".
+                              'Site: '.($populated['site'] ?? 'none')."\n".
+                              'Page: '.($populated['page'] ?? 'none')."\n".
+                              'Template: '.($populated['template'] ?? 'none')."\n".
+                              'Stats: '.($populated['stats'] ?? 'none')."\n\n".
+                              'Debug info: '.json_encode($debug, JSON_PRETTY_PRINT);
 
                     Notification::make()
                         ->title(__('filament.cache.notifications.debug_complete'))
@@ -159,7 +159,7 @@ class CacheManagement extends Page
     {
         $site = app('site');
         $siteId = $site?->id ?? 0;
-        
+
         return [
             'cacheStats' => CacheService::getCacheStats(),
             'siteCacheUsage' => $siteId ? CacheService::getSiteCacheUsage($siteId) : [],

@@ -149,7 +149,7 @@ class PageResource extends Resource
                             ->schema(function (Forms\Get $get) {
                                 $templateId = $get('template_id');
 
-                                if (!$templateId) {
+                                if (! $templateId) {
                                     return [
                                         Forms\Components\Placeholder::make('template_info')
                                             ->label('')
@@ -159,7 +159,7 @@ class PageResource extends Resource
                                 }
 
                                 $template = Template::find($templateId);
-                                if (!$template) {
+                                if (! $template) {
                                     return [
                                         Forms\Components\Placeholder::make('template_error')
                                             ->label('')
@@ -244,7 +244,7 @@ class PageResource extends Resource
                     ->color('info')
                     ->url(function (Page $record): string {
                         $site = app('site');
-                        if (!$site) {
+                        if (! $site) {
                             return '#';
                         }
 
@@ -281,8 +281,6 @@ class PageResource extends Resource
             ->where('site_id', app('site')?->id)
             ->with(['template']);
     }
-
-
 
     public static function getRelations(): array
     {

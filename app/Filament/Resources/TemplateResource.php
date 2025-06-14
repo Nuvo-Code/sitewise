@@ -42,7 +42,7 @@ class TemplateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Hidden::make('site_id')
-                    ->default(fn() => app('site')?->id),
+                    ->default(fn () => app('site')?->id),
 
                 Forms\Components\Tabs::make('Template Settings')
                     ->tabs([
@@ -138,7 +138,7 @@ class TemplateResource extends Resource
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
                                                 ->placeholder('Default value...')
-                                                ->visible(fn(Forms\Get $get) => in_array($get('type'), ['text', 'email', 'url']))
+                                                ->visible(fn (Forms\Get $get) => in_array($get('type'), ['text', 'email', 'url']))
                                                 ->default(''),
 
                                             Forms\Components\Textarea::make('default_value')
@@ -146,60 +146,60 @@ class TemplateResource extends Resource
                                                 ->rows(2)
                                                 ->helperText('Optional default value for this field')
                                                 ->placeholder('Default value...')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'textarea'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'textarea'),
 
                                             Forms\Components\RichEditor::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'rich_text'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'rich_text'),
 
                                             CodeEditor::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default HTML code for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'html'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'html'),
 
                                             CodeEditor::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default CSS code for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'css'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'css'),
 
                                             CodeEditor::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default JavaScript code for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'javascript'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'javascript'),
 
                                             Forms\Components\TextInput::make('default_value')
                                                 ->label('Default Value')
                                                 ->numeric()
                                                 ->helperText('Optional default value for this field')
                                                 ->placeholder('0')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'number'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'number'),
 
                                             Forms\Components\DatePicker::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'date'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'date'),
 
                                             Forms\Components\DateTimePicker::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default value for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'datetime'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'datetime'),
 
                                             Forms\Components\Select::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Select a default option')
-                                                ->options(fn(Forms\Get $get) => $get('options') ?? [])
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'select'),
+                                                ->options(fn (Forms\Get $get) => $get('options') ?? [])
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'select'),
 
                                             Forms\Components\Toggle::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Default state for this field')
-                                                ->visible(fn(Forms\Get $get) => in_array($get('type'), ['checkbox', 'toggle'])),
+                                                ->visible(fn (Forms\Get $get) => in_array($get('type'), ['checkbox', 'toggle'])),
 
                                             Forms\Components\ColorPicker::make('default_value')
                                                 ->label('Default Value')
                                                 ->helperText('Optional default color for this field')
-                                                ->visible(fn(Forms\Get $get) => $get('type') === 'color'),
+                                                ->visible(fn (Forms\Get $get) => $get('type') === 'color'),
                                         ])->columnSpanFull(),
 
                                         // Options for select fields
@@ -208,11 +208,11 @@ class TemplateResource extends Resource
                                             ->keyLabel('Value')
                                             ->valueLabel('Label')
                                             ->addActionLabel('Add Option')
-                                            ->visible(fn(Forms\Get $get) => $get('type') === 'select')
+                                            ->visible(fn (Forms\Get $get) => $get('type') === 'select')
                                             ->helperText('Define the available options for this select field'),
                                     ])
                                     ->columns(2)
-                                    ->itemLabel(fn(array $state): ?string => $state['name'] ?? 'New Field')
+                                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Field')
                                     ->addActionLabel('Add Template Field')
                                     ->reorderableWithButtons()
                                     ->collapsible()
@@ -254,15 +254,15 @@ class TemplateResource extends Resource
                                         ->color('success')
                                         ->action(function (Forms\Set $set, Forms\Get $get) {
                                             $structure = $get('structure') ?? [];
-                                            if (!empty($structure)) {
+                                            if (! empty($structure)) {
                                                 // Create a temporary template to generate sample
-                                                $tempTemplate = new Template();
+                                                $tempTemplate = new Template;
                                                 $tempTemplate->structure = $structure;
                                                 $sample = BladeTemplateService::generateSampleBladeTemplate($tempTemplate);
                                                 $set('blade_template', $sample);
                                             }
                                         })
-                                        ->visible(fn(Forms\Get $get) => !empty($get('structure')))
+                                        ->visible(fn (Forms\Get $get) => ! empty($get('structure')))
                                         ->tooltip('Generate a sample Blade template based on your fields'),
 
                                     Forms\Components\Actions\Action::make('show_variables')
@@ -276,7 +276,7 @@ class TemplateResource extends Resource
                                                 return 'Define template fields first to see available variables.';
                                             }
 
-                                            $tempTemplate = new Template();
+                                            $tempTemplate = new Template;
                                             $tempTemplate->structure = $structure;
                                             $variables = BladeTemplateService::getAvailableVariables($tempTemplate);
 
@@ -288,8 +288,8 @@ class TemplateResource extends Resource
                                             }
                                             $content .= '</ul>';
 
-                                            $fieldVars = array_filter($variables, fn($key) => !in_array($key, ['page', 'site', 'template', 'content', 'page_title', 'page_slug', 'site_name', 'site_domain']), ARRAY_FILTER_USE_KEY);
-                                            if (!empty($fieldVars)) {
+                                            $fieldVars = array_filter($variables, fn ($key) => ! in_array($key, ['page', 'site', 'template', 'content', 'page_title', 'page_slug', 'site_name', 'site_domain']), ARRAY_FILTER_USE_KEY);
+                                            if (! empty($fieldVars)) {
                                                 $content .= '<h4 class="font-semibold mt-4">Template Field Variables:</h4>';
                                                 $content .= '<ul class="list-disc list-inside space-y-1">';
                                                 foreach ($fieldVars as $var => $desc) {
@@ -303,7 +303,7 @@ class TemplateResource extends Resource
                                         })
                                         ->modalSubmitAction(false)
                                         ->modalCancelActionLabel('Close')
-                                        ->visible(fn(Forms\Get $get) => !empty($get('structure')))
+                                        ->visible(fn (Forms\Get $get) => ! empty($get('structure')))
                                         ->tooltip('View all available variables for your template'),
                                 ])
                                     ->columnSpanFull(),
@@ -333,8 +333,8 @@ class TemplateResource extends Resource
                                                 foreach ($paths as $path => $description) {
                                                     $content .= '<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">';
                                                     $content .= '<div class="flex-1">';
-                                                    $content .= '<code class="text-sm font-mono text-blue-600 dark:text-blue-400 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\'' . htmlspecialchars($path) . '\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">' . htmlspecialchars($path) . '</code>';
-                                                    $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">' . $description . '</p>';
+                                                    $content .= '<code class="text-sm font-mono text-blue-600 dark:text-blue-400 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\''.htmlspecialchars($path).'\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">'.htmlspecialchars($path).'</code>';
+                                                    $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">'.$description.'</p>';
                                                     $content .= '</div>';
                                                     $content .= '</div>';
                                                 }
@@ -377,13 +377,13 @@ class TemplateResource extends Resource
                                                 $content = '<div class="space-y-4">';
                                                 foreach ($classes as $category => $categoryClasses) {
                                                     $content .= '<div>';
-                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">' . $category . '</h4>';
+                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">'.$category.'</h4>';
                                                     $content .= '<div class="space-y-2">';
                                                     foreach ($categoryClasses as $class => $description) {
                                                         $content .= '<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">';
                                                         $content .= '<div class="flex-1">';
-                                                        $content .= '<code class="text-sm font-mono text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900 px-2 py-1 rounded break-all" onclick="navigator.clipboard.writeText(\'' . htmlspecialchars($class) . '\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">' . htmlspecialchars($class) . '</code>';
-                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">' . $description . '</p>';
+                                                        $content .= '<code class="text-sm font-mono text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900 px-2 py-1 rounded break-all" onclick="navigator.clipboard.writeText(\''.htmlspecialchars($class).'\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">'.htmlspecialchars($class).'</code>';
+                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">'.$description.'</p>';
                                                         $content .= '</div>';
                                                         $content .= '</div>';
                                                     }
@@ -422,13 +422,13 @@ class TemplateResource extends Resource
                                                 $content = '<div class="space-y-4">';
                                                 foreach ($paths as $category => $categoryPaths) {
                                                     $content .= '<div>';
-                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">' . $category . '</h4>';
+                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">'.$category.'</h4>';
                                                     $content .= '<div class="space-y-2">';
                                                     foreach ($categoryPaths as $path => $description) {
                                                         $content .= '<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">';
                                                         $content .= '<div class="flex-1">';
-                                                        $content .= '<code class="text-sm font-mono text-purple-600 dark:text-purple-400 cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\'{{ ' . htmlspecialchars($path) . ' }}\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">{{ ' . htmlspecialchars($path) . ' }}</code>';
-                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">' . $description . '</p>';
+                                                        $content .= '<code class="text-sm font-mono text-purple-600 dark:text-purple-400 cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\'{{ '.htmlspecialchars($path).' }}\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">{{ '.htmlspecialchars($path).' }}</code>';
+                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">'.$description.'</p>';
                                                         $content .= '</div>';
                                                         $content .= '</div>';
                                                     }
@@ -469,13 +469,13 @@ class TemplateResource extends Resource
                                                 $content = '<div class="space-y-4">';
                                                 foreach ($resources as $category => $categoryResources) {
                                                     $content .= '<div>';
-                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">' . $category . '</h4>';
+                                                    $content .= '<h4 class="font-semibold text-gray-900 dark:text-white mb-2">'.$category.'</h4>';
                                                     $content .= '<div class="space-y-2">';
                                                     foreach ($categoryResources as $url => $description) {
                                                         $content .= '<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">';
                                                         $content .= '<div class="flex-1">';
-                                                        $content .= '<code class="text-sm font-mono text-orange-600 dark:text-orange-400 cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900 px-2 py-1 rounded break-all" onclick="navigator.clipboard.writeText(\'' . htmlspecialchars($url) . '\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">' . htmlspecialchars($url) . '</code>';
-                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">' . $description . '</p>';
+                                                        $content .= '<code class="text-sm font-mono text-orange-600 dark:text-orange-400 cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900 px-2 py-1 rounded break-all" onclick="navigator.clipboard.writeText(\''.htmlspecialchars($url).'\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">'.htmlspecialchars($url).'</code>';
+                                                        $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">'.$description.'</p>';
                                                         $content .= '</div>';
                                                         $content .= '</div>';
                                                     }
@@ -512,8 +512,8 @@ class TemplateResource extends Resource
                                                 foreach ($paths as $path => $description) {
                                                     $content .= '<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">';
                                                     $content .= '<div class="flex-1">';
-                                                    $content .= '<code class="text-sm font-mono text-indigo-600 dark:text-indigo-400 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\'' . htmlspecialchars($path) . '\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">' . htmlspecialchars($path) . '</code>';
-                                                    $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">' . $description . '</p>';
+                                                    $content .= '<code class="text-sm font-mono text-indigo-600 dark:text-indigo-400 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 px-2 py-1 rounded" onclick="navigator.clipboard.writeText(\''.htmlspecialchars($path).'\'); this.style.backgroundColor=\'#10b981\'; this.style.color=\'white\'; setTimeout(() => { this.style.backgroundColor=\'\'; this.style.color=\'\'; }, 1000);">'.htmlspecialchars($path).'</code>';
+                                                    $content .= '<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">'.$description.'</p>';
                                                     $content .= '</div>';
                                                     $content .= '</div>';
                                                 }

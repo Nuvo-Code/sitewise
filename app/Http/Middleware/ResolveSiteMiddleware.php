@@ -22,7 +22,7 @@ class ResolveSiteMiddleware
         // Use cached site lookup for better performance
         $site = CacheService::getSiteByDomain($domain);
 
-        if (!$site) {
+        if (! $site) {
             $site = Site::createForDomain($domain);
             // Clear the cache to ensure the new site is cached on next request
             CacheService::clearSiteCache($site->id);

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class Page extends Model
 {
@@ -63,7 +63,7 @@ class Page extends Model
 
     public function hasTemplate(): bool
     {
-        return !is_null($this->template_id);
+        return ! is_null($this->template_id);
     }
 
     public function isTemplateRendered(): bool

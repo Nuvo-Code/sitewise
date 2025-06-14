@@ -2,11 +2,11 @@
 
 namespace App\Observers;
 
-use App\Services\CacheService;
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Models\TemplateContent;
+use App\Services\CacheService;
 
 class CacheObserver
 {

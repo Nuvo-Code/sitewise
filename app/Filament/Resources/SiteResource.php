@@ -233,7 +233,7 @@ class SiteResource extends Resource
                                     ->rows(3)
                                     ->helperText(__('filament.resources.site.fields.maintenance_message.helper'))
                                     ->default(__('filament.resources.site.fields.maintenance_message.default'))
-                                    ->disabled(fn(Forms\Get $get) => !$get('settings.maintenance_mode')),
+                                    ->disabled(fn (Forms\Get $get) => ! $get('settings.maintenance_mode')),
 
                                 TimezoneSelect::make('settings.timezone')
                                     ->label(__('filament.resources.site.fields.timezone.label'))
@@ -277,14 +277,14 @@ class SiteResource extends Resource
                                     ])
                                     ->default('openai')
                                     ->live()
-                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->helperText(__('filament.resources.site.fields.ai_provider.helper')),
 
                                 Forms\Components\TextInput::make('ai_configuration.api_key')
                                     ->label(__('filament.resources.site.fields.ai_api_key.label'))
                                     ->password()
                                     ->revealable()
-                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->helperText(__('filament.resources.site.fields.ai_api_key.helper'))
                                     ->placeholder(__('filament.resources.site.fields.ai_api_key.placeholder')),
 
@@ -293,10 +293,11 @@ class SiteResource extends Resource
                                     ->options(function (Forms\Get $get) {
                                         $provider = $get('ai_configuration.provider') ?? 'openai';
                                         $aiService = app(AiContentService::class);
+
                                         return $aiService->getAvailableModels($provider);
                                     })
                                     ->default('gpt-4o-mini')
-                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->live()
                                     ->helperText(__('filament.resources.site.fields.ai_model.helper')),
 
@@ -319,7 +320,7 @@ class SiteResource extends Resource
                                             </ul>
                                         </div>
                                     '))
-                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->columnSpanFull(),
 
                                 Forms\Components\Actions::make([
@@ -327,10 +328,12 @@ class SiteResource extends Resource
                                         ->label(__('filament.resources.site.actions.test_configuration'))
                                         ->icon('heroicon-o-play')
                                         ->color('success')
-                                        ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled') && $get('ai_configuration.api_key'))
+                                        ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled') && $get('ai_configuration.api_key'))
                                         ->action(function (Forms\Get $get) {
                                             $site = app('site');
-                                            if (!$site) return;
+                                            if (! $site) {
+                                                return;
+                                            }
 
                                             // Temporarily update the site with current form values
                                             $site->ai_configuration = [
@@ -358,7 +361,7 @@ class SiteResource extends Resource
                                             }
                                         }),
                                 ])
-                                    ->visible(fn(Forms\Get $get) => $get('ai_configuration.enabled'))
+                                    ->visible(fn (Forms\Get $get) => $get('ai_configuration.enabled'))
                                     ->columnSpanFull(),
                             ])
                             ->columns(2),

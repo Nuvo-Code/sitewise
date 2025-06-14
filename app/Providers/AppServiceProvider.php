@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Models\TemplateContent;
 use App\Observers\CacheObserver;
@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register cache observers for automatic cache invalidation
-        $cacheObserver = new CacheObserver();
+        $cacheObserver = new CacheObserver;
 
         Site::observe($cacheObserver);
         Page::observe($cacheObserver);
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
-            fn(): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
+            fn (): string => '<link rel="stylesheet" href="/css/filament/admin/theme.css">'
         );
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {

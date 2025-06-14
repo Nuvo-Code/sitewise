@@ -12,24 +12,28 @@ use Livewire\Attributes\Computed;
 class AiContentGeneration extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
-    
+
     protected static string $view = 'filament.pages.ai-content-generation';
-    
+
     protected static ?string $title = null;
 
     public function getTitle(): string
     {
         return __('filament.pages.ai_content_generation.title');
     }
-    
+
     protected static bool $shouldRegisterNavigation = false;
-    
+
     public ?array $data = [];
-    
+
     public string $generatedContent = '';
+
     public string $model = '';
+
     public string $provider = '';
+
     public bool $isGenerating = false;
+
     public bool $showResult = false;
 
     protected AiContentService $aiContentService;
@@ -42,15 +46,16 @@ class AiContentGeneration extends Page
     public function mount(): void
     {
         $site = app('site');
-        
-        if (!$site || !$site->isAiEnabled()) {
+
+        if (! $site || ! $site->isAiEnabled()) {
             Notification::make()
                 ->title('AI Not Available')
                 ->body('AI content generation is not configured for this site.')
                 ->warning()
                 ->send();
-                
+
             redirect()->to('/admin');
+
             return;
         }
 
@@ -81,15 +86,16 @@ class AiContentGeneration extends Page
     public function generateContent(): void
     {
         $this->validate();
-        
+
         $site = app('site');
-        
-        if (!$site || !$site->isAiEnabled()) {
+
+        if (! $site || ! $site->isAiEnabled()) {
             Notification::make()
                 ->title('AI Not Available')
                 ->body('AI content generation is not configured for this site.')
                 ->danger()
                 ->send();
+
             return;
         }
 
@@ -120,7 +126,7 @@ class AiContentGeneration extends Page
         } catch (\Exception $e) {
             Notification::make()
                 ->title('Unexpected Error')
-                ->body('An error occurred while generating content: ' . $e->getMessage())
+                ->body('An error occurred while generating content: '.$e->getMessage())
                 ->danger()
                 ->send();
         } finally {
@@ -157,12 +163,14 @@ class AiContentGeneration extends Page
     public function canGenerate(): bool
     {
         $site = app('site');
-        return $site && $site->isAiEnabled() && !$this->isGenerating;
+
+        return $site && $site->isAiEnabled() && ! $this->isGenerating;
     }
 
     public static function canAccess(): bool
     {
         $site = app('site');
+
         return $site && $site->isAiEnabled();
     }
 }

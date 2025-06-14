@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Site;
 use App\Models\Page;
+use App\Models\Site;
 use App\Models\Template;
 use App\Services\CacheService;
 use Illuminate\Support\Facades\Cache;
@@ -89,7 +89,7 @@ test('cache service can get site statistics', function () {
     ]);
 
     $stats = CacheService::getSiteStats($site->id);
-    
+
     expect($stats)->toHaveKey('pages_count');
     expect($stats)->toHaveKey('active_pages_count');
     expect($stats['pages_count'])->toBe(2);
@@ -110,7 +110,7 @@ test('cache service can clear site cache', function () {
     // Verify cache exists
     $cacheKey1 = CacheService::siteKey(CacheService::SITE_PREFIX, $site->id);
     $cacheKey2 = CacheService::siteKey(CacheService::SITE_PREFIX, 0, "domain:{$site->domain}");
-    
+
     expect(Cache::has($cacheKey1))->toBeTrue();
     expect(Cache::has($cacheKey2))->toBeTrue();
 
@@ -145,7 +145,7 @@ test('cache service can warm site cache', function () {
     ]);
 
     $warmed = CacheService::warmSiteCache($site->id);
-    
+
     expect($warmed)->toHaveKey('site');
     expect($warmed)->toHaveKey('pages');
     expect($warmed)->toHaveKey('templates');
@@ -156,7 +156,7 @@ test('cache service can warm site cache', function () {
 
 test('cache service can get cache statistics', function () {
     $stats = CacheService::getCacheStats();
-    
+
     expect($stats)->toHaveKey('driver');
     expect($stats)->toHaveKey('total_keys');
     expect($stats)->toHaveKey('memory_usage');

@@ -13,12 +13,12 @@ class EditSite extends EditRecord
 
     protected static ?string $title = 'Site Settings';
 
-    public function mount(int | string | null $record = null): void
+    public function mount(int|string|null $record = null): void
     {
         // Always use the current site instead of a record parameter
         $this->record = app('site');
 
-        if (!$this->record) {
+        if (! $this->record) {
             abort(404, 'Site not found');
         }
 
